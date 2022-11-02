@@ -2,16 +2,15 @@ package edu.sns.memorystack
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import edu.sns.memorystack.databinding.ActivityMainBinding
+import edu.sns.memorystack.databinding.LoginLayoutBinding
 
-class MainActivity : AppCompatActivity()
+class LoginActivity : AppCompatActivity()
 {
     private val binding by lazy {
-        ActivityMainBinding.inflate(layoutInflater)
+        LoginLayoutBinding.inflate(layoutInflater)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
     }
