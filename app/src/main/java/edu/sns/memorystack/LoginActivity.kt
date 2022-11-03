@@ -25,7 +25,7 @@ class LoginActivity : AppCompatActivity()
         }
 
         binding.createAccount.setOnClickListener {
-
+            moveToAccountActivity()
         }
     }
 
@@ -55,6 +55,11 @@ class LoginActivity : AppCompatActivity()
     {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
+    }
+
+    private fun moveToAccountActivity()
+    {
+        startActivity(Intent(this, CreateAccountActivity::class.java))
     }
 
     private fun errorLog(msg: String)
