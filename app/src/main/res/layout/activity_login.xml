@@ -20,17 +20,19 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/nickname"
+        android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="484dp"
         android:ems="10"
-        android:hint="Nickname"
+        android:hint="E-mail"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:layout_constraintVertical_bias="0.18" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <EditText
         android:id="@+id/password"
@@ -43,18 +45,18 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nickname" />
+        app:layout_constraintTop_toBottomOf="@+id/email" />
 
     <Button
         android:id="@+id/login_button"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:text="Login"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/auto_login" />
+        app:layout_constraintTop_toBottomOf="@+id/errorText" />
 
     <Button
         android:id="@+id/create_account"
@@ -71,6 +73,7 @@
         android:id="@+id/app_logo"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:paddingLeft="20dp"
         android:paddingTop="20dp"
         android:paddingRight="20dp"
@@ -81,12 +84,15 @@
         app:layout_constraintTop_toBottomOf="@+id/create_account"
         app:srcCompat="@drawable/ic_launcher_foreground" />
 
-    <CheckBox
-        android:id="@+id/auto_login"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/errorText"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:checked="false"
-        android:text="Allow Auto Login"
+        android:layout_marginTop="8dp"
+        android:gravity="center|left"
+        android:textColor="#FF0000"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/password"
         app:layout_constraintTop_toBottomOf="@+id/password" />
 
