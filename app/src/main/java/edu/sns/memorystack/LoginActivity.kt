@@ -6,6 +6,7 @@ import android.os.Bundle
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import edu.sns.memorystack.databinding.ActivityLoginBinding
+import edu.sns.memorystack.method.AccountMethod
 
 class LoginActivity : AppCompatActivity()
 {
@@ -29,26 +30,19 @@ class LoginActivity : AppCompatActivity()
         }
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+        Firebase.auth.currentUser?.let {
+            moveToMainActivity()
+        }
+    }
+
     private fun login(id: String, password: String)
     {
         errorLog("")
 
-        if(id.isEmpty()) {
-            errorLog("Please enter nickname or email")
-            return
-        }
-        if(password.isEmpty()) {
-            errorLog("Please enter password")
-            return
-        }
-
-        Firebase.auth.signInWithEmailAndPassword(id, password)
-            .addOnCompleteListener {
-                if(it.isSuccessful)
-                    moveToMainActivity()
-                else
-                    errorLog(it.exception?.message ?: "")
-            }
+        AccountMethod.login(id, password, ::moveToMainActivity, ::errorLog)
     }
 
     private fun moveToMainActivity()
