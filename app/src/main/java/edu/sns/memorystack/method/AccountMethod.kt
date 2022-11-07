@@ -4,6 +4,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import edu.sns.memorystack.data.UserProfile
+import kotlinx.coroutines.tasks.await
 
 class AccountMethod
 {
@@ -78,29 +79,24 @@ class AccountMethod
                 }
         }
 
-        fun getUserProfile(uid: String, onResult: (UserProfile?) -> Unit)
+        suspend fun getUserProfile(uid: String): UserProfile?
         {
-            val db = Firebase.firestore
-            var profile: UserProfile? = null
+            val db = Firebase.firestore;
 
-            db.collection("users")
+            val data = db.collection("users")
                 .document(uid)
                 .get()
-                .addOnSuccessListener {
-                    val data = it.data
+                .await()
 
-                    val name = data?.get("name").toString()
-                    val nickname = data?.get("nickname").toString()
-                    val email = data?.get("email").toString()
-                    val phone = data?.get("phone").toString()
+            val name = data.get("name").toString()
+            val nickname = data.get("nickname").toString()
+            val email = data.get("email").toString()
+            val phone = data.get("phone").toString()
 
-                    if(name.isNullOrBlank() || nickname.isNullOrBlank() || email.isNullOrBlank() || phone.isNullOrBlank()) {
-                        onResult(null)
-                        return@addOnSuccessListener
-                    }
+            if(name.isNullOrBlank() || nickname.isNullOrBlank() || email.isNullOrBlank() || phone.isNullOrBlank())
+                return null
 
-                    onResult(UserProfile(name, nickname, email, null, phone))
-                }
+            return UserProfile(name, nickname, email, null, phone)
         }
     }
 }
