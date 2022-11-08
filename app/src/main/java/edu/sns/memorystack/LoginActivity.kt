@@ -7,6 +7,10 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import edu.sns.memorystack.databinding.ActivityLoginBinding
 import edu.sns.memorystack.method.AccountMethod
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity()
 {
@@ -22,6 +26,7 @@ class LoginActivity : AppCompatActivity()
             val email = binding.email.text.toString()
             val password = binding.password.text.toString()
 
+            uiSetEnable(false)
             login(email, password)
         }
 
@@ -42,7 +47,27 @@ class LoginActivity : AppCompatActivity()
     {
         errorLog("")
 
-        AccountMethod.login(id, password, ::moveToMainActivity, ::errorLog)
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = AccountMethod.login(id, password)
+
+            withContext(Dispatchers.Main) {
+                when (result) {
+                    AccountMethod.AccountMethodResult.SUCCESS -> {
+                        moveToMainActivity()
+                    }
+                    AccountMethod.AccountMethodResult.EMAIL_BLANK -> {
+                        errorLog("Please enter E-mail")
+                    }
+                    AccountMethod.AccountMethodResult.PASSWORD_BLANK -> {
+                        errorLog("Please enter Password")
+                    }
+                    else -> {
+                        errorLog("Please check E-mail and Password")
+                    }
+                }
+                uiSetEnable(true)
+            }
+        }
     }
 
     private fun moveToMainActivity()
@@ -59,5 +84,13 @@ class LoginActivity : AppCompatActivity()
     private fun errorLog(msg: String)
     {
         binding.errorText.text = msg
+    }
+
+    private fun uiSetEnable(enable: Boolean)
+    {
+        binding.email.isEnabled = enable
+        binding.password.isEnabled = enable
+        binding.loginButton.isEnabled = enable
+        binding.createAccount.isEnabled = enable
     }
 }

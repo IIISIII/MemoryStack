@@ -2,10 +2,13 @@ package edu.sns.memorystack
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import edu.sns.memorystack.data.UserProfile
 import edu.sns.memorystack.databinding.ActivityCreateAccountBinding
 import edu.sns.memorystack.method.AccountMethod
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CreateAccountActivity : AppCompatActivity()
 {
@@ -28,22 +31,38 @@ class CreateAccountActivity : AppCompatActivity()
 
             uiSetEnable(false)
             profile = UserProfile(name, nickname, email, password, phone)
-            AccountMethod.createUser(profile, ::onSuccess, ::onFailed)
+            createAccount(profile)
         }
     }
 
-    private fun onSuccess()
+    private fun createAccount(profile: UserProfile)
     {
-        val failedFunc = { _: String ->
-            finish()
-        }
-        AccountMethod.login(profile.email, profile.password!!, ::finish, failedFunc)
-    }
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = AccountMethod.createUser(profile)
 
-    private fun onFailed(msg: String)
-    {
-        uiSetEnable(true)
-        Snackbar.make(binding.root, msg, Snackbar.LENGTH_LONG).show()
+            if(result == AccountMethod.AccountMethodResult.SUCCESS) {
+                val loginResult = AccountMethod.login(profile.email, profile.password!!)
+                withContext(Dispatchers.Main) {
+                    if (loginResult == AccountMethod.AccountMethodResult.SUCCESS) {
+
+                    } else {
+                        //login failed
+                        uiSetEnable(true)
+                    }
+                }
+            }
+            else {
+                //create account failed
+                withContext(Dispatchers.Main) {
+                    when(result) {
+                        else -> {
+
+                        }
+                    }
+                    uiSetEnable(true)
+                }
+            }
+        }
     }
 
     private fun uiSetEnable(enable: Boolean)

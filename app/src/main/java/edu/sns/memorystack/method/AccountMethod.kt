@@ -1,6 +1,7 @@
 package edu.sns.memorystack.method
 
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import edu.sns.memorystack.data.UserProfile
@@ -8,75 +9,81 @@ import kotlinx.coroutines.tasks.await
 
 class AccountMethod
 {
+    enum class AccountMethodResult {
+        SUCCESS, FAILED, NAME_BLANK, NICKNAME_BLANK, EMAIL_BLANK, PASSWORD_BLANK, PHONE_BLANK, NAME_OVERLAP, NICKNAME_OVERLAP, EMAIL_OVERLAP, PHONE_OVERLAP
+    }
+
     companion object
     {
-        fun createUser(profile: UserProfile, onSuccess: () -> Unit, onFailed: (String) -> Unit)
+        suspend fun createUser(profile: UserProfile): AccountMethodResult
         {
-            if(profile.name.isBlank()) {
-                onFailed("Please enter User Name")
-                return
-            }
-            if(profile.nickname.isBlank()) {
-                onFailed("Please enter Nickname")
-                return
-            }
-            if(profile.email.isBlank()) {
-                onFailed("Please enter E-mail")
-                return
-            }
-            if(profile.password.isNullOrBlank()) {
-                onFailed("Please enter Password")
-                return
-            }
-            if(profile.phone.isBlank()) {
-                onFailed("Please enter Phone")
-                return
-            }
+            if(profile.name.isBlank())
+                return AccountMethodResult.NAME_BLANK
+            if(profile.nickname.isBlank())
+                return AccountMethodResult.NICKNAME_BLANK
+            if(profile.email.isBlank())
+                return AccountMethodResult.EMAIL_BLANK
+            if(profile.password.isNullOrBlank())
+                return AccountMethodResult.PASSWORD_BLANK
+            if(profile.phone.isBlank())
+                return AccountMethodResult.PHONE_BLANK
 
             val db = Firebase.firestore
             val auth = Firebase.auth
-            try {
-                auth.createUserWithEmailAndPassword(profile.email, profile.password!!)
-                    .addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            it.result.user?.uid?.let { uid ->
-                                db.collection("users")
-                                    .document(uid)
-                                    .set(profile.toHashMap())
-                                    .addOnSuccessListener {
-                                        onSuccess()
-                                    }
-                                    .addOnFailureListener { err ->
-                                        onFailed(err.message ?: "")
-                                    }
-                            }
-                        } else
-                            onFailed(it.exception?.message ?: "")
-                    }
+            val users = db.collection("users")
+
+            if(isProfileDataOverlap(users, "nickname", profile.nickname))
+                return AccountMethodResult.NICKNAME_OVERLAP
+            if(isProfileDataOverlap(users, "email", profile.email))
+                return AccountMethodResult.EMAIL_OVERLAP
+            if(isProfileDataOverlap(users, "phone", profile.phone))
+                return AccountMethodResult.PHONE_OVERLAP
+
+            return try {
+                val result = auth.createUserWithEmailAndPassword(profile.email, profile.password!!)
+                    .await()
+
+                if(result.user == null)
+                    AccountMethodResult.FAILED
+                else
+                    AccountMethodResult.SUCCESS
+
             } catch (err: Exception) {
-                onFailed(err.message ?: "")
+                AccountMethodResult.FAILED
             }
         }
 
-        fun login(email: String, password: String, onSuccess: () -> Unit, onFailed: (String) -> Unit)
+        private suspend fun isProfileDataOverlap(ref: CollectionReference, key: String, value: String): Boolean
         {
-            if(email.isBlank()) {
-                onFailed("Please enter E-mail")
-                return
-            }
-            if(password.isBlank()) {
-                onFailed("Please enter Password")
-                return
-            }
+            return !ref.whereEqualTo(key, value).get().await().isEmpty
+        }
+
+        suspend fun isProfileDataOverlap(key: String, value: String): Boolean
+        {
+            val db = Firebase.firestore
+            return !db.collection("users").whereEqualTo(key, value).get().await().isEmpty
+        }
+
+        suspend fun login(email: String, password: String): AccountMethodResult
+        {
+            if(email.isBlank())
+                return AccountMethodResult.EMAIL_BLANK
+            if(password.isBlank())
+                return AccountMethodResult.PASSWORD_BLANK
 
             val auth = Firebase.auth
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener {
-                    if(it.isSuccessful)
-                        onSuccess()
-                    else
-                        onFailed(it.exception?.message ?: "")
-                }
+            return try {
+                val result = auth.signInWithEmailAndPassword(email, password)
+                    .await()
+
+                if(result.user == null)
+                    AccountMethodResult.FAILED
+                else
+                    AccountMethodResult.SUCCESS
+
+            } catch (err: Exception) {
+                AccountMethodResult.FAILED
+            }
         }
 
         suspend fun getUserProfile(uid: String): UserProfile?
