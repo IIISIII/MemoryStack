@@ -48,23 +48,21 @@ class LoginActivity : AppCompatActivity()
         errorLog("")
 
         CoroutineScope(Dispatchers.IO).launch {
-            val result = AccountMethod.login(id, password)
-
-            withContext(Dispatchers.Main) {
-                when (result) {
-                    AccountMethod.AccountMethodResult.SUCCESS -> {
+            try {
+                if (AccountMethod.login(id, password)) {
+                    withContext(Dispatchers.Main) {
                         moveToMainActivity()
                     }
-                    AccountMethod.AccountMethodResult.EMAIL_BLANK -> {
-                        errorLog("Please enter E-mail")
-                    }
-                    AccountMethod.AccountMethodResult.PASSWORD_BLANK -> {
-                        errorLog("Please enter Password")
-                    }
-                    else -> {
-                        errorLog("Please check E-mail and Password")
+                }
+            } catch(err: Exception) {
+                err.message?.let {
+                    withContext(Dispatchers.Main) {
+                        errorLog(it)
                     }
                 }
+            }
+            withContext(Dispatchers.Main) {
+                errorLog("Please check E-mail and Password")
                 uiSetEnable(true)
             }
         }

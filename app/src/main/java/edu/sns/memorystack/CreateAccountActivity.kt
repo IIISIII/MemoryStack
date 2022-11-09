@@ -2,6 +2,7 @@ package edu.sns.memorystack
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.google.android.material.snackbar.Snackbar
 import edu.sns.memorystack.data.UserProfile
 import edu.sns.memorystack.databinding.ActivityCreateAccountBinding
 import edu.sns.memorystack.method.AccountMethod
@@ -38,29 +39,23 @@ class CreateAccountActivity : AppCompatActivity()
     private fun createAccount(profile: UserProfile)
     {
         CoroutineScope(Dispatchers.IO).launch {
-            val result = AccountMethod.createUser(profile)
-
-            if(result == AccountMethod.AccountMethodResult.SUCCESS) {
-                val loginResult = AccountMethod.login(profile.email, profile.password!!)
+            try {
+                if (AccountMethod.createUser(profile)) {
+                    if (AccountMethod.login(profile.email, profile.password!!)) {
+                        withContext(Dispatchers.Main) {
+                            finish()
+                        }
+                    }
+                }
+            } catch(err: Exception) {
                 withContext(Dispatchers.Main) {
-                    if (loginResult == AccountMethod.AccountMethodResult.SUCCESS) {
-
-                    } else {
-                        //login failed
-                        uiSetEnable(true)
+                    err.message?.let {
+                        Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
                     }
                 }
             }
-            else {
-                //create account failed
-                withContext(Dispatchers.Main) {
-                    when(result) {
-                        else -> {
-
-                        }
-                    }
-                    uiSetEnable(true)
-                }
+            withContext(Dispatchers.Main) {
+                uiSetEnable(true)
             }
         }
     }

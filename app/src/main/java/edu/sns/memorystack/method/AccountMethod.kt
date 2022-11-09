@@ -9,47 +9,43 @@ import kotlinx.coroutines.tasks.await
 
 class AccountMethod
 {
-    enum class AccountMethodResult {
-        SUCCESS, FAILED, NAME_BLANK, NICKNAME_BLANK, EMAIL_BLANK, PASSWORD_BLANK, PHONE_BLANK, NAME_OVERLAP, NICKNAME_OVERLAP, EMAIL_OVERLAP, PHONE_OVERLAP
-    }
-
     companion object
     {
-        suspend fun createUser(profile: UserProfile): AccountMethodResult
+        suspend fun createUser(profile: UserProfile): Boolean
         {
             if(profile.name.isBlank())
-                return AccountMethodResult.NAME_BLANK
+                throw Exception("ProfileDataBlankError: Username is blank")
             if(profile.nickname.isBlank())
-                return AccountMethodResult.NICKNAME_BLANK
+                throw Exception("ProfileDataBlankError: Nickname is blank")
             if(profile.email.isBlank())
-                return AccountMethodResult.EMAIL_BLANK
+                throw Exception("ProfileDataBlankError: E-mail is blank")
             if(profile.password.isNullOrBlank())
-                return AccountMethodResult.PASSWORD_BLANK
+                throw Exception("ProfileDataBlankError: Password is blank")
             if(profile.phone.isBlank())
-                return AccountMethodResult.PHONE_BLANK
+                throw Exception("ProfileDataBlankError: Phone is blank")
 
             val db = Firebase.firestore
             val auth = Firebase.auth
             val users = db.collection("users")
 
             if(isProfileDataOverlap(users, "nickname", profile.nickname))
-                return AccountMethodResult.NICKNAME_OVERLAP
+                throw Exception("ProfileDataOverlapError: ${profile.nickname} is already valid")
             if(isProfileDataOverlap(users, "email", profile.email))
-                return AccountMethodResult.EMAIL_OVERLAP
+                throw Exception("ProfileDataOverlapError: ${profile.email} is already valid")
             if(isProfileDataOverlap(users, "phone", profile.phone))
-                return AccountMethodResult.PHONE_OVERLAP
+                throw Exception("ProfileDataOverlapError: ${profile.phone} is already valid")
 
             return try {
                 val result = auth.createUserWithEmailAndPassword(profile.email, profile.password!!)
                     .await()
 
-                if(result.user == null)
-                    AccountMethodResult.FAILED
-                else
-                    AccountMethodResult.SUCCESS
+                result.user?.let {
+                    users.document(it.uid).set(profile.toHashMap()).await()
+                }
 
+                true
             } catch (err: Exception) {
-                AccountMethodResult.FAILED
+                false
             }
         }
 
@@ -64,25 +60,21 @@ class AccountMethod
             return !db.collection("users").whereEqualTo(key, value).get().await().isEmpty
         }
 
-        suspend fun login(email: String, password: String): AccountMethodResult
+        suspend fun login(email: String, password: String): Boolean
         {
             if(email.isBlank())
-                return AccountMethodResult.EMAIL_BLANK
+                throw Exception("ProfileDataBlankError: E-mail is blank")
             if(password.isBlank())
-                return AccountMethodResult.PASSWORD_BLANK
+                throw Exception("ProfileDataBlankError: Password is blank")
 
             val auth = Firebase.auth
             return try {
                 val result = auth.signInWithEmailAndPassword(email, password)
                     .await()
 
-                if(result.user == null)
-                    AccountMethodResult.FAILED
-                else
-                    AccountMethodResult.SUCCESS
-
+                result.user != null
             } catch (err: Exception) {
-                AccountMethodResult.FAILED
+                false
             }
         }
 
