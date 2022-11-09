@@ -60,7 +60,8 @@ class PostMethod
             for(post in result.documents) {
                 val text = post.get("text")?.toString() ?: continue
                 val imgPath = post.get("imgPath")?.toString() ?: continue
-                list.add(PostData(imgPath, text))
+                val date = post.get("date")?.toString() ?: continue
+                list.add(PostData(imgPath, text, Timestamp(Date(date))))
             }
 
             return list
