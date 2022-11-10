@@ -7,19 +7,20 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.appcompat.app.AlertDialog
-import com.google.android.material.snackbar.Snackbar
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import edu.sns.memorystack.data.UserProfile
 import edu.sns.memorystack.databinding.ActivityMainBinding
+import edu.sns.memorystack.fragment.*
 import edu.sns.memorystack.method.AccountMethod
 import edu.sns.memorystack.method.PostMethod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity()
 {
@@ -40,26 +41,7 @@ class MainActivity : AppCompatActivity()
         if(currentUser == null)
             moveToLoginActivity()
 
-        binding.post.setOnClickListener {
-            uploadDialog()
-        }
-        binding.getPosts.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                val list = PostMethod.getPosts(currentUser!!.uid)
 
-                if(list.size > 0) {
-                    val data = list[0]
-                    val img = PostMethod.getImage(data.imgPath)
-                    withContext(Dispatchers.Main) {
-                        binding.imageView.setImageBitmap(img)
-                    }
-                }
-
-                withContext(Dispatchers.Main) {
-                    Snackbar.make(binding.root, list.size.toString(), Snackbar.LENGTH_LONG).show()
-                }
-            }
-        }
     }
 
     private fun uploadDialog() {
@@ -96,9 +78,7 @@ class MainActivity : AppCompatActivity()
             CoroutineScope(Dispatchers.IO).launch {
                 val profile = AccountMethod.getUserProfile(it.uid)
 
-                withContext(Dispatchers.Main) {
-                    binding.test.text = "${profile?.nickname}\n${profile?.email}\n${profile?.name}\n${profile?.phone}" ?: "null"
-                }
+
             }
         }
     }
@@ -114,10 +94,22 @@ class MainActivity : AppCompatActivity()
         finish()
     }
 
-    private fun onResult(profile: UserProfile?)
+    class ViewPagerAdapter(fragment: FragmentActivity): FragmentStateAdapter(fragment)
     {
-        if(profile == null)
-            return
-        binding.test.text = profile!!.nickname
+        override fun getItemCount(): Int
+        {
+            return 5
+        }
+
+        override fun createFragment(position: Int): Fragment
+        {
+            return when(position) {
+                0 -> PostListFragment()
+                1 -> FollowListFragment()
+                2 -> PostFragment()
+                3 -> DirectMessageFragment()
+                else -> ProfileFragment()
+            }
+        }
     }
 }
