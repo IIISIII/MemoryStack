@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:enabled="true"
+        android:icon="@drawable/home"
+        android:title="home" />
+    <item
+        android:id="@+id/people"
+        android:enabled="true"
+        android:icon="@drawable/people"
+        android:title="friends" />
+    <item
+        android:id="@+id/add"
+        android:enabled="true"
+        android:icon="@drawable/add_post"
+        android:title="post" />
+    <item
+        android:id="@+id/dm"
+        android:enabled="true"
+        android:icon="@drawable/direct_message"
+        android:title="DM" />
+    <item
+        android:id="@+id/my_account"
+        android:enabled="true"
+        android:icon="@drawable/account"
+        android:title="account" />
+</menu>
