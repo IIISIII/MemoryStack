@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.provider.MediaStore
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -20,13 +21,14 @@ class PostMethod
         suspend fun post(uid: String, fileId: Long?, msg: String): Boolean
         {
             val db = Firebase.firestore
-            val userPosts = db.collection("posts/${uid}/list")
+            val userPosts = db.collection("posts")
 
             val upload = uploadFile(uid, fileId, System.currentTimeMillis().toString()) ?: return false
 
             userPosts
                 .document()
                 .set(hashMapOf(
+                    "uid" to uid,
                     "text" to msg,
                     "imgPath" to upload,
                     "date" to Timestamp(Date())
@@ -48,20 +50,24 @@ class PostMethod
             return result.metadata?.path
         }
 
-        suspend fun getPosts(uid: String): ArrayList<PostData>
+        suspend fun getPostsByUid(uids: List<String>): ArrayList<PostData>
         {
             val list = ArrayList<PostData>()
 
             val db = Firebase.firestore
-            val userPosts = db.collection("posts/${uid}/list")
+            val userPosts = db.collection("posts")
 
-            val result = userPosts.get().await() ?: return list
+            val result = userPosts.whereIn("uid", uids)
+                //.orderBy("date", Query.Direction.DESCENDING)
+                .get()
+                .await() ?: return list
 
             for(post in result.documents) {
+                val user = post.get("uid")?.toString() ?: continue
                 val text = post.get("text")?.toString() ?: continue
                 val imgPath = post.get("imgPath")?.toString() ?: continue
-                val date = post.get("date")?.toString() ?: continue
-                list.add(PostData(imgPath, text, Timestamp(Date(date))))
+                val date = post.getTimestamp("date") ?: continue
+                list.add(PostData(user, imgPath, text, date))
             }
 
             return list

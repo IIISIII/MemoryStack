@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MemoryStack</string>
+    <string name="no_post_permission">App has no file read permission. Can\'t read from gallery</string>
+    <string name="req_post_permission_reason">App requires file read permission. Could you allow the permission?</string>
 </resources>

@@ -47,9 +47,12 @@ class LoginActivity : AppCompatActivity()
     {
         errorLog("")
 
+        var result = false
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                if (AccountMethod.login(id, password)) {
+                result = AccountMethod.login(id, password)
+                if(result) {
                     withContext(Dispatchers.Main) {
                         moveToMainActivity()
                     }
@@ -61,9 +64,11 @@ class LoginActivity : AppCompatActivity()
                     }
                 }
             }
-            withContext(Dispatchers.Main) {
-                errorLog("Please check E-mail and Password")
-                uiSetEnable(true)
+            if(!result) {
+                withContext(Dispatchers.Main) {
+                    errorLog("Please check E-mail and Password")
+                    uiSetEnable(true)
+                }
             }
         }
     }

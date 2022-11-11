@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MemoryStack</string>
+    <string name="no_post_permission">파일 읽기 권한이 없습니다. 갤러리에서 사진을 불러올 수 없습니다.</string>
+    <string name="req_post_permission_reason">갤러리에서 사진을 불러오기 위해선 파일 읽기 권한이 필요합니다. 권한을 승인 하시겠습니까?</string>
+</resources>

@@ -6,10 +6,13 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -22,7 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity()
+class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListener
 {
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
@@ -30,6 +33,8 @@ class MainActivity : AppCompatActivity()
 
     private lateinit var auth: FirebaseAuth
     private var currentUser: FirebaseUser? = null
+
+    private var init = false
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -40,31 +45,8 @@ class MainActivity : AppCompatActivity()
         currentUser = auth.currentUser
         if(currentUser == null)
             moveToLoginActivity()
-
-
-    }
-
-    private fun uploadDialog() {
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-            == PackageManager.PERMISSION_GRANTED) {
-            val cursor = contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null)
-
-            AlertDialog.Builder(this)
-                .setTitle("Choose Photo")
-                .setCursor(cursor, { _, i ->
-                    cursor?.run {
-                        moveToPosition(i)
-                        val idIdx = getColumnIndex(MediaStore.Images.ImageColumns._ID)
-                        val nameIdx = getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)
-
-                        CoroutineScope(Dispatchers.IO).launch {
-                            PostMethod.post(currentUser!!.uid, getLong(idIdx), "test")
-                        }
-                    }
-                }, MediaStore.Images.ImageColumns.DISPLAY_NAME).create().show()
-        } else {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
-        }
+        else
+            init()
     }
 
     override fun onResume()
@@ -75,17 +57,27 @@ class MainActivity : AppCompatActivity()
             currentUser = auth.currentUser
 
         currentUser?.let {
-            CoroutineScope(Dispatchers.IO).launch {
-                val profile = AccountMethod.getUserProfile(it.uid)
-
-
-            }
+            if(!init)
+                init()
         }
     }
 
-    override fun onNewIntent(intent: Intent?)
+    private fun init()
     {
-        super.onNewIntent(intent)
+        binding.container.adapter = ViewPagerAdapter(this)
+        binding.container.registerOnPageChangeCallback(
+            object: ViewPager2.OnPageChangeCallback()
+            {
+                override fun onPageSelected(position: Int)
+                {
+                    super.onPageSelected(position)
+                    binding.navigation.menu.getItem(position).isChecked = true
+                }
+            }
+        )
+        binding.navigation.setOnItemSelectedListener(this)
+
+        init = true
     }
 
     private fun moveToLoginActivity()
@@ -94,7 +86,7 @@ class MainActivity : AppCompatActivity()
         finish()
     }
 
-    class ViewPagerAdapter(fragment: FragmentActivity): FragmentStateAdapter(fragment)
+    class ViewPagerAdapter(val fragment: FragmentActivity): FragmentStateAdapter(fragment)
     {
         override fun getItemCount(): Int
         {
@@ -109,6 +101,34 @@ class MainActivity : AppCompatActivity()
                 2 -> PostFragment()
                 3 -> DirectMessageFragment()
                 else -> ProfileFragment()
+            }
+        }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.home -> {
+                binding.container.currentItem = 0
+                return true
+            }
+            R.id.follow -> {
+                binding.container.currentItem = 1
+                return true
+            }
+            R.id.post -> {
+                binding.container.currentItem = 2
+                return true
+            }
+            R.id.dm -> {
+                binding.container.currentItem = 3
+                return true
+            }
+            R.id.profile -> {
+                binding.container.currentItem = 4
+                return true
+            }
+            else -> {
+                return false
             }
         }
     }
