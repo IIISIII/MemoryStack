@@ -15,16 +15,15 @@ import com.google.firebase.ktx.Firebase
 import edu.sns.memorystack.R
 import edu.sns.memorystack.adapter.PostListAdapter
 import edu.sns.memorystack.method.PostMethod
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class PostListFragment: Fragment(), OnRefreshListener
 {
     private lateinit var refreshLayout: SwipeRefreshLayout
     private lateinit var postList: RecyclerView
     private lateinit var listAdapter: PostListAdapter
+
+    private var job: Job? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
@@ -55,7 +54,7 @@ class PostListFragment: Fragment(), OnRefreshListener
             adapter = listAdapter
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        job = CoroutineScope(Dispatchers.IO).launch {
             val posts = PostMethod.getPostsByUid(listOf(currentUser.uid))
             withContext(Dispatchers.Main) {
                 listAdapter.setItemList(posts)
@@ -73,7 +72,8 @@ class PostListFragment: Fragment(), OnRefreshListener
             return
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        job?.cancel()
+        job = CoroutineScope(Dispatchers.IO).launch {
             val posts = PostMethod.getPostsByUid(listOf(currentUser.uid))
             withContext(Dispatchers.Main) {
                 listAdapter.setItemList(posts)

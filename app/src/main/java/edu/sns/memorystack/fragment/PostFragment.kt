@@ -49,11 +49,15 @@ class PostFragment: Fragment(), OnRefreshListener
 
         fragmentLayout = view
 
+        val context = requireContext()
+
         val requestBtn = view.findViewById<Button>(R.id.request_permission)
         requestBtn.setOnClickListener {
-            requestSinglePermission(requireContext(), view, Manifest.permission.READ_EXTERNAL_STORAGE)
+            requestSinglePermission(context, view, Manifest.permission.READ_EXTERNAL_STORAGE)
         }
-        requestSinglePermission(requireContext(), view, Manifest.permission.READ_EXTERNAL_STORAGE)
+
+        if(context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+            init(context, view)
     }
 
     override fun onRefresh()
@@ -93,7 +97,6 @@ class PostFragment: Fragment(), OnRefreshListener
 
     private fun refresh(context: Context)
     {
-
         getCursor(context)?.let {
             val listAdapter = GalleryListAdapter(it)
             imageList.adapter = listAdapter
