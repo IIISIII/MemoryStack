@@ -95,6 +95,9 @@ class CreateAccountActivity : AppCompatActivity()
 
             override fun afterTextChanged(s: Editable?)
             {
+                if(viewModel.sceneFlag)
+                    return
+
                 val str = s.toString()
                 viewModel.username = str
                 nameFlag = str.isNotBlank()
@@ -115,6 +118,9 @@ class CreateAccountActivity : AppCompatActivity()
 
             override fun afterTextChanged(s: Editable?)
             {
+                if(viewModel.sceneFlag)
+                    return
+
                 nicknameFlag = false
                 s.toString().let {
                     viewModel.nickname = it
@@ -150,6 +156,9 @@ class CreateAccountActivity : AppCompatActivity()
 
             override fun afterTextChanged(s: Editable?)
             {
+                if(viewModel.sceneFlag)
+                    return
+
                 phoneFlag = false
                 s.toString().let {
                     viewModel.phone = it
@@ -190,11 +199,11 @@ class CreateAccountActivity : AppCompatActivity()
             phoneText.editText?.setText(it)
         }
 
-        nextBtn.isEnabled = nameFlag && nicknameFlag && phoneFlag
-
         nextBtn.setOnClickListener {
             goToScene2()
         }
+
+        viewModel.sceneFlag = false
     }
 
     private fun sceneSecondInit()
@@ -217,6 +226,9 @@ class CreateAccountActivity : AppCompatActivity()
 
             override fun afterTextChanged(s: Editable?)
             {
+                if(!viewModel.sceneFlag)
+                    return
+
                 val email = s.toString()
                 val match = pattern.matcher(email)
 
@@ -254,6 +266,9 @@ class CreateAccountActivity : AppCompatActivity()
 
             override fun afterTextChanged(s: Editable?)
             {
+                if(!viewModel.sceneFlag)
+                    return
+
                 val str = s.toString()
                 viewModel.password = str
                 passwordFlag = str == passwordMatchText.editText?.text.toString()
@@ -272,6 +287,9 @@ class CreateAccountActivity : AppCompatActivity()
 
             override fun afterTextChanged(s: Editable?)
             {
+                if(!viewModel.sceneFlag)
+                    return
+
                 val str = s.toString()
                 viewModel.passwordMatch = str
                 passwordFlag = str == passwordText.editText?.text.toString()
@@ -334,12 +352,12 @@ class CreateAccountActivity : AppCompatActivity()
                 }
             }
         }
+
+        viewModel.sceneFlag = true
     }
 
     private fun goToScene1()
     {
-        viewModel.sceneFlag = false
-
         viewModel.email = null
         viewModel.password = null
         viewModel.passwordMatch = null
@@ -349,7 +367,6 @@ class CreateAccountActivity : AppCompatActivity()
 
     private fun goToScene2()
     {
-        viewModel.sceneFlag = true
         TransitionManager.go(scene2, Fade())
     }
 
