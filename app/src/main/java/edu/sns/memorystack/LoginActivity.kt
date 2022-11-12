@@ -3,6 +3,9 @@ package edu.sns.memorystack
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import edu.sns.memorystack.databinding.ActivityLoginBinding
@@ -18,13 +21,51 @@ class LoginActivity : AppCompatActivity()
         ActivityLoginBinding.inflate(layoutInflater)
     }
 
+    private var emailFlag = false
+    private var passwordFlag = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        binding.loginButton.isEnabled = false
+
+        val pattern = android.util.Patterns.EMAIL_ADDRESS
+
+        binding.emailText.editText?.addTextChangedListener(object: TextWatcher {
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun afterTextChanged(s: Editable?)
+            {
+                val match = pattern.matcher(s.toString())
+                binding.emailText.apply {
+                    isErrorEnabled = !match.matches()
+                    emailFlag = !isErrorEnabled
+                    error = if(isErrorEnabled) "Incorrect email" else null
+                }
+
+                binding.loginButton.isEnabled = emailFlag && passwordFlag
+            }
+        })
+
+        binding.passwordText.editText?.addTextChangedListener(object: TextWatcher {
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun afterTextChanged(s: Editable?)
+            {
+                passwordFlag = s.toString().isNotBlank()
+
+                binding.loginButton.isEnabled = emailFlag && passwordFlag
+            }
+        })
+
         binding.loginButton.setOnClickListener {
-            val email = binding.email.text.toString()
-            val password = binding.password.text.toString()
+            val email = binding.emailText.editText?.text.toString()
+            val password = binding.passwordText.editText?.text.toString()
 
             uiSetEnable(false)
             login(email, password)
@@ -57,13 +98,7 @@ class LoginActivity : AppCompatActivity()
                         moveToMainActivity()
                     }
                 }
-            } catch(err: Exception) {
-                err.message?.let {
-                    withContext(Dispatchers.Main) {
-                        errorLog(it)
-                    }
-                }
-            }
+            } catch(err: Exception) {}
             if(!result) {
                 withContext(Dispatchers.Main) {
                     errorLog("Please check E-mail and Password")
@@ -86,13 +121,15 @@ class LoginActivity : AppCompatActivity()
 
     private fun errorLog(msg: String)
     {
-        binding.errorText.text = msg
+        val isBlank = msg.isBlank()
+        binding.emailText.isErrorEnabled = !isBlank
+        binding.emailText.error = if(isBlank) null else msg
     }
 
     private fun uiSetEnable(enable: Boolean)
     {
-        binding.email.isEnabled = enable
-        binding.password.isEnabled = enable
+        binding.emailText.isEnabled = enable
+        binding.passwordText.isEnabled = enable
         binding.loginButton.isEnabled = enable
         binding.createAccount.isEnabled = enable
     }

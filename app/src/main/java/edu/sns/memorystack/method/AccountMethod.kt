@@ -28,11 +28,11 @@ class AccountMethod
             val auth = Firebase.auth
             val users = db.collection("users")
 
-            if(isProfileDataOverlap(users, "nickname", profile.nickname))
+            if(isProfileDataOverlap(users, UserProfile.KEY_NICKNAME, profile.nickname))
                 throw Exception("ProfileDataOverlapError: ${profile.nickname} is already valid")
-            if(isProfileDataOverlap(users, "email", profile.email))
+            if(isProfileDataOverlap(users, UserProfile.KEY_EMAIL, profile.email))
                 throw Exception("ProfileDataOverlapError: ${profile.email} is already valid")
-            if(isProfileDataOverlap(users, "phone", profile.phone))
+            if(isProfileDataOverlap(users, UserProfile.KEY_PHONE, profile.phone))
                 throw Exception("ProfileDataOverlapError: ${profile.phone} is already valid")
 
             return try {
@@ -62,16 +62,13 @@ class AccountMethod
 
         suspend fun login(email: String, password: String): Boolean
         {
-            if(email.isBlank())
-                throw Exception("ProfileDataBlankError: E-mail is blank")
-            if(password.isBlank())
-                throw Exception("ProfileDataBlankError: Password is blank")
+            if(email.isBlank() || password.isBlank())
+                return false
 
             val auth = Firebase.auth
             return try {
                 val result = auth.signInWithEmailAndPassword(email, password)
                     .await()
-
                 result.user != null
             } catch (err: Exception) {
                 false
@@ -87,10 +84,10 @@ class AccountMethod
                 .get()
                 .await()
 
-            val name = data.get("name").toString()
-            val nickname = data.get("nickname").toString()
-            val email = data.get("email").toString()
-            val phone = data.get("phone").toString()
+            val name = data.get(UserProfile.KEY_NAME).toString()
+            val nickname = data.get(UserProfile.KEY_NICKNAME).toString()
+            val email = data.get(UserProfile.KEY_EMAIL).toString()
+            val phone = data.get(UserProfile.KEY_PHONE).toString()
 
             if(name.isNullOrBlank() || nickname.isNullOrBlank() || email.isNullOrBlank() || phone.isNullOrBlank())
                 return null
