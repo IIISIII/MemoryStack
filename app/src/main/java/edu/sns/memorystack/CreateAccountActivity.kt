@@ -188,6 +188,7 @@ class CreateAccountActivity : AppCompatActivity()
                 }
             }
         })
+        //phoneText.editText?.addTextChangedListener(PhoneNumberFormattingTextWatcher())
 
         viewModel.username?.let {
             nameText.editText?.setText(it)
