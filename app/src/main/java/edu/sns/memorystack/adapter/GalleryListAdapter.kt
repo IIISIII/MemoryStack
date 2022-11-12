@@ -14,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import edu.sns.memorystack.PostActivity
 import edu.sns.memorystack.R
@@ -74,7 +73,9 @@ class GalleryListAdapter(val cursor: Cursor): RecyclerView.Adapter<GalleryListAd
         val view = LayoutInflater.from(parent.context).inflate(R.layout.image_list_item, parent, false)
         val params = view.layoutParams
 
-        params.height = parent.measuredHeight / 3
+        val pWidth = parent.measuredWidth
+        val pHeight = parent.measuredHeight
+        params.height = if(pWidth > pHeight) pHeight else pHeight / 3
         view.layoutParams = params
 
         val vh = ViewHolder(view, parent.context)

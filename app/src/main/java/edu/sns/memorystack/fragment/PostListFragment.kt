@@ -1,5 +1,6 @@
 package edu.sns.memorystack.fragment
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import edu.sns.memorystack.R
@@ -17,8 +20,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PostListFragment: Fragment()
+class PostListFragment: Fragment(), OnRefreshListener
 {
+    private lateinit var refreshLayout: SwipeRefreshLayout
+    private lateinit var postList: RecyclerView
+    private lateinit var listAdapter: PostListAdapter
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         return inflater.inflate(R.layout.post_list_page, container, false)
@@ -31,14 +38,18 @@ class PostListFragment: Fragment()
         val auth = Firebase.auth
         val currentUser = auth.currentUser ?: return
 
-        val list = view.findViewById<RecyclerView>(R.id.post_list)
+        refreshLayout = view.findViewById(R.id.refresh_layout)
+        refreshLayout.setOnRefreshListener(this)
+
+        postList = view.findViewById<RecyclerView>(R.id.post_list)
 
         val listManager = LinearLayoutManager(view.context)
-        val listAdapter = PostListAdapter()
+        listAdapter = PostListAdapter()
 
-        list.apply {
+        postList.apply {
             setHasFixedSize(true)
             setItemViewCacheSize(20)
+            addItemDecoration(PostListItemDecoration(view.context.resources.getDimensionPixelSize(R.dimen.post_list_item_decoration_height)))
 
             layoutManager = listManager
             adapter = listAdapter
@@ -49,6 +60,34 @@ class PostListFragment: Fragment()
             withContext(Dispatchers.Main) {
                 listAdapter.setItemList(posts)
             }
+        }
+    }
+
+    override fun onRefresh()
+    {
+        val auth = Firebase.auth
+        val currentUser = auth.currentUser
+
+        if(currentUser == null) {
+            refreshLayout.isRefreshing = false
+            return
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val posts = PostMethod.getPostsByUid(listOf(currentUser.uid))
+            withContext(Dispatchers.Main) {
+                listAdapter.setItemList(posts)
+                refreshLayout.isRefreshing = false
+            }
+        }
+    }
+
+    class PostListItemDecoration(val height: Int): RecyclerView.ItemDecoration()
+    {
+        override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State)
+        {
+            super.getItemOffsets(outRect, view, parent, state)
+            outRect.top = height
         }
     }
 }

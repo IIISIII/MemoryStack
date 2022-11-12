@@ -57,8 +57,9 @@ class PostMethod
             val db = Firebase.firestore
             val userPosts = db.collection("posts")
 
-            val result = userPosts.whereIn("uid", uids)
-                //.orderBy("date", Query.Direction.DESCENDING)
+            val result = userPosts
+                .whereIn("uid", uids)
+                .orderBy("date", Query.Direction.DESCENDING)
                 .get()
                 .await() ?: return list
 
