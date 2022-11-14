@@ -16,6 +16,8 @@ import edu.sns.memorystack.R
 
 class ProfileFragment: Fragment()
 {
+
+    //
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         return inflater.inflate(R.layout.profile_page, container, false)
@@ -35,8 +37,9 @@ class ProfileFragment: Fragment()
         val itemsCollectionRef = db.collection("users")
         //nickname 설정
         val nickname = view.findViewById<TextView>(R.id.nickname)
+
         //uid이용하여 nickname 지정
-        itemsCollectionRef.document(uid.toString()).get()
+       itemsCollectionRef.document(uid.toString()).get()
             .addOnSuccessListener {
                 nickname.text = it["nickname"].toString()
                 println(nickname.setText(it["nickname"].toString()))
@@ -46,7 +49,6 @@ class ProfileFragment: Fragment()
 
         edit.setOnClickListener {
             println("button clicked#############################")
-
         }
     }
 }
