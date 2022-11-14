@@ -1,6 +1,5 @@
 package edu.sns.memorystack.fragment
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.commit
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -37,17 +38,22 @@ class ProfileFragment: Fragment()
         val itemsCollectionRef = db.collection("users")
         //nickname 설정
         val nickname = view.findViewById<TextView>(R.id.nickname)
-
         //uid이용하여 nickname 지정
        itemsCollectionRef.document(uid.toString()).get()
             .addOnSuccessListener {
                 nickname.text = it["nickname"].toString()
                 println(nickname.setText(it["nickname"].toString()))
             }
+        //fragment이동
+        val editFragment = EditProfileFragment()
         //edit처리
         val edit = view.findViewById<Button>(R.id.edit_profile)
 
         edit.setOnClickListener {
+            FragmentActivity().supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.container, editFragment)
+                .commit()
             println("button clicked#############################")
         }
     }
