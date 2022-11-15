@@ -30,6 +30,14 @@ class FollowListAdapter(private val userProfile: ArrayList<UserProfile>) : Recyc
         viewHolder.email.text = user.email
         viewHolder.name.text = user.name
         viewHolder.nickname.text = user.nickname
+        //버튼에 대한 이벤트 처리
+        val follow = viewHolder.button_follow
+        follow.setOnClickListener {
+            if(follow.text == "follow")
+                follow.text = "unfollow"
+            else if(follow.text == "unfollow")
+                follow.text = "follow"
+        }
     }
     //사이즈만틈 반환
     override fun getItemCount(): Int{
