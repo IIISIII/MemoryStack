@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal">
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="150dp">
@@ -88,11 +87,9 @@
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/account_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </androidx.recyclerview.widget.RecyclerView>
-
 </LinearLayout>
