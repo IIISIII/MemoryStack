@@ -84,6 +84,14 @@ class AccountMethod
                 .get()
                 .await()
 
+            db.collection("users").get()
+                .addOnSuccessListener {
+                    for(document in it.documents) {
+                        val uid = document.id
+
+                    }
+                }
+
             val name = data.get(UserProfile.KEY_NAME).toString()
             val nickname = data.get(UserProfile.KEY_NICKNAME).toString()
             val email = data.get(UserProfile.KEY_EMAIL).toString()
@@ -93,6 +101,21 @@ class AccountMethod
                 return null
 
             return UserProfile(name, nickname, email, null, phone)
+        }
+
+        suspend fun getAllUid(): List<String>
+        {
+            val db = Firebase.firestore
+            val list = ArrayList<String>()
+
+            val users = db.collection("users")
+                .get()
+                .await()
+
+            for(document in users)
+                list.add(document.id)
+
+            return list;
         }
     }
 }
