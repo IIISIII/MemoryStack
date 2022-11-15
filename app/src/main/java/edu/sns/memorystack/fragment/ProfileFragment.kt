@@ -1,5 +1,6 @@
 package edu.sns.memorystack.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +14,13 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import edu.sns.memorystack.EditProfileActivity
 import edu.sns.memorystack.R
+import edu.sns.memorystack.data.ProfileRepository
+import edu.sns.memorystack.method.AccountMethod
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ProfileFragment: Fragment()
 {
@@ -39,21 +46,24 @@ class ProfileFragment: Fragment()
         //nickname 설정
         val nickname = view.findViewById<TextView>(R.id.nickname)
         //uid이용하여 nickname 지정
+        /*
        itemsCollectionRef.document(uid.toString()).get()
             .addOnSuccessListener {
                 nickname.text = it["nickname"].toString()
                 println(nickname.setText(it["nickname"].toString()))
             }
-        //fragment이동
-        val editFragment = EditProfileFragment()
+
+         */
+        CoroutineScope(Dispatchers.IO).launch {
+            val user_profile = AccountMethod.getUserProfile(uid.toString())
+            nickname.text = user_profile?.nickname
+        }
         //edit처리
         val edit = view.findViewById<Button>(R.id.edit_profile)
 
         edit.setOnClickListener {
-            FragmentActivity().supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, editFragment)
-                .commit()
+           val intent = Intent(activity, EditProfileActivity::class.java)
+            startActivity(intent)
             println("button clicked#############################")
         }
     }

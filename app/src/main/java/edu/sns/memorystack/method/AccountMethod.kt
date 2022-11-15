@@ -88,7 +88,6 @@ class AccountMethod
                 .addOnSuccessListener {
                     for(document in it.documents) {
                         val uid = document.id
-
                     }
                 }
 

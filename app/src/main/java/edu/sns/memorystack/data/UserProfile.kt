@@ -1,6 +1,6 @@
 package edu.sns.memorystack.data
 
-data class UserProfile(val name: String, val nickname: String, val email: String, val password: String?, val phone: String) {
+data class UserProfile(val name: String, var nickname: String, val email: String, val password: String?, val phone: String) {
     companion object
     {
         val KEY_NAME = "name"
