@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1056185032876",
+    "project_id": "memorystack-855d7",
+    "storage_bucket": "memorystack-855d7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1056185032876:android:f4e7aada9e5baae12c7f09",
+        "android_client_info": {
+          "package_name": "edu.sns.memorystack"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1056185032876-vh278ti0vfv0bvq4lqbmdrpfu0q06gj6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDq0Ls4BZWTIOpcNuYP00qEbjwT5LIb2PA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1056185032876-vh278ti0vfv0bvq4lqbmdrpfu0q06gj6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
