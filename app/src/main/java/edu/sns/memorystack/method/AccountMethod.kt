@@ -77,7 +77,7 @@ class AccountMethod
 
         suspend fun getUserProfile(uid: String): UserProfile?
         {
-            val db = Firebase.firestore;
+            val db = Firebase.firestore
 
             val data = db.collection("users")
                 .document(uid)
@@ -100,6 +100,31 @@ class AccountMethod
                 return null
 
             return UserProfile(name, nickname, email, null, phone)
+        }
+
+        //업데이트 성공하면 true 실패하면 false 반환
+        suspend fun updateUserProfile(uid: String, profile: UserProfile?): Boolean
+        {
+            if(profile == null)
+                return false
+
+            val db = Firebase.firestore
+
+            profile!!.let {
+                val updateProfile = getUserProfile(uid)?.toHashMap()
+
+                updateProfile?.let { map ->
+                    map[UserProfile.KEY_NICKNAME] = it.nickname
+                    map[UserProfile.KEY_PHONE] = it.phone
+
+                    db.collection("users")
+                        .document(uid)
+                        .update(map as Map<String, Any>)
+                        .await()
+                } ?: return false
+            }
+
+            return true
         }
 
         suspend fun getAllUid(): List<String>

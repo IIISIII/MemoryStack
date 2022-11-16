@@ -66,12 +66,12 @@ class ProfileFragment: Fragment()
         val edit = view.findViewById<Button>(R.id.edit_profile)
 
         edit.setOnClickListener {
-//           val intent = Intent(activity, EditProfileActivity::class.java)
-//            startActivity(intent)
+            val intent = Intent(activity, EditProfileActivity::class.java)
+            startActivity(intent)
 
             //팔로우 기능 확인차 넣어둠
-            doFollow()
-            println("button clicked#############################")
+//            doFollow()
+//            println("button clicked#############################")
         }
         getFollowerAndFollowing()
     }
