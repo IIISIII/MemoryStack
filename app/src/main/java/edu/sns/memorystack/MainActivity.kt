@@ -40,6 +40,10 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        //logo표시
+        supportActionBar?.setIcon(R.drawable.stack_logo)
+        getSupportActionBar()?.setDisplayUseLogoEnabled(true)
+        getSupportActionBar()?.setDisplayShowHomeEnabled(true)
 
         auth = Firebase.auth
         currentUser = auth.currentUser
