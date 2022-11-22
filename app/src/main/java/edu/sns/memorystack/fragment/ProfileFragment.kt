@@ -7,20 +7,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import edu.sns.memorystack.EditProfileActivity
+import edu.sns.memorystack.LoginActivity
 import edu.sns.memorystack.R
 import edu.sns.memorystack.data.FollowDTO
-import edu.sns.memorystack.data.ProfileRepository
+import edu.sns.memorystack.data.UserProfile
 import edu.sns.memorystack.method.AccountMethod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
 
 class ProfileFragment: Fragment()
 {
@@ -68,44 +71,39 @@ class ProfileFragment: Fragment()
         edit.setOnClickListener {
             val intent = Intent(activity, EditProfileActivity::class.java)
             startActivity(intent)
-
-            //팔로우 기능 확인차 넣어둠
-//            doFollow()
-//            println("button clicked#############################")
         }
-        getFollowerAndFollowing()
+        
+        //logout 처리
+        val logout = view.findViewById<Button>(R.id.logout)
+        logout.setOnClickListener {
+            Toast.makeText(activity, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+
+            val intent = Intent(activity, LoginActivity::class.java)
+            FirebaseAuth.getInstance().signOut()
+            startActivity(intent)
+        }
+
+        //getFollowerAndFollowing()
+        uid?.let { getFollowingFollower(it) }
     }
 
-    //follow
-    fun doFollow() {
-        // document(uid) -> 팔로잉 기능함
-        val tsDocFollowing = db.collection("follow").document(uid!!.toString())
-        db.runTransaction { transaction ->
-            var followDTO = transaction.get(tsDocFollowing).toObject(FollowDTO::class.java)
-            //팔로우 정보 없음 / 생성
-            if(followDTO == null){
-                followDTO = FollowDTO()
-                followDTO.followingCount = 1
-                followDTO.followings[uid!!] = true
+    fun getFollowingFollower(uid : String){
+        val follower = db.collection("follow").document(uid).collection("follower")
+        val following = db.collection("follow").document(uid).collection("following")
 
-                transaction.set(tsDocFollowing,followDTO)
-                return@runTransaction
+        //uid 가져와짐
+        following.get().addOnSuccessListener {
+            for(d in it){
+                println("following-----${d.id}, ${d["uid"]}")
+                view?.findViewById<TextView>(R.id.followingCount)?.text = it.size().toString()
             }
-            //팔로우 하고 있는 경우 / 취소
-            if(followDTO.followings.containsKey(uid)){
-                followDTO.followingCount = followDTO.followingCount - 1
-                followDTO.followings.remove(uid)
-            }
-            //팔로우 하고 있지 않은 경우 / 팔로우
-            else {
-                followDTO.followingCount = followDTO.followingCount + 1
-                followDTO.followings.set(uid!!, true)
-            }
-            transaction.set(tsDocFollowing,followDTO)
-            return@runTransaction
         }
-        //내가 팔로우한 사람의 팔로워수
-
+        follower.get().addOnSuccessListener {
+            for(d in it){
+                println("follower-----${d.id}, ${d["uid"]}")
+                view?.findViewById<TextView>(R.id.followerCount)?.text = it.size().toString()
+            }
+        }
     }
 
     //팔로워, 팔로잉 수 받아옴
