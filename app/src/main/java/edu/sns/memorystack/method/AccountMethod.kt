@@ -114,8 +114,10 @@ class AccountMethod
                 val updateProfile = getUserProfile(uid)?.toHashMap()
 
                 updateProfile?.let { map ->
-                    map[UserProfile.KEY_NICKNAME] = it.nickname
-                    map[UserProfile.KEY_PHONE] = it.phone
+                    if(it.nickname.isNotBlank())
+                        map[UserProfile.KEY_NICKNAME] = it.nickname
+                    if(it.phone.isNotBlank())
+                        map[UserProfile.KEY_PHONE] = it.phone
 
                     db.collection("users")
                         .document(uid)
