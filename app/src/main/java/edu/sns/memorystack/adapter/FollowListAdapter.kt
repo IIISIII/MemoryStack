@@ -46,6 +46,8 @@ class FollowListAdapter(private val userProfile: ArrayList<String>) : RecyclerVi
                         else if(follow.text == "unfollow")
                             follow.text = "follow"
                     }
+
+
                     //
                     email.text = profile?.email
                     name.text = profile?.name
