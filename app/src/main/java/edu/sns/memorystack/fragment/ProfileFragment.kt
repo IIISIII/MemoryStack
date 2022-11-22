@@ -107,17 +107,17 @@ class ProfileFragment: Fragment()
     }
 
     //팔로워, 팔로잉 수 받아옴
-    fun getFollowerAndFollowing(){
-        db.collection("follow").document(uid!!).addSnapshotListener { value, error ->
-            if(value == null) return@addSnapshotListener
-            val followDTO = value.toObject(FollowDTO::class.java)
-            if(followDTO?.followingCount != null){
-                view?.findViewById<TextView>(R.id.followingCount)?.text = followDTO.followingCount.toString()
-            }
-            if(followDTO?.followerCount != null) {
-                view?.findViewById<TextView>(R.id.followerCount)?.text =
-                    followDTO.followerCount.toString()
-            }
-        }
-    }
+//    fun getFollowerAndFollowing(){
+//        db.collection("follow").document(uid!!).addSnapshotListener { value, error ->
+//            if(value == null) return@addSnapshotListener
+//            val followDTO = value.toObject(FollowDTO::class.java)
+//            if(followDTO?.followingCount != null){
+//                view?.findViewById<TextView>(R.id.followingCount)?.text = followDTO.followingCount.toString()
+//            }
+//            if(followDTO?.followerCount != null) {
+//                view?.findViewById<TextView>(R.id.followerCount)?.text =
+//                    followDTO.followerCount.toString()
+//            }
+//        }
+//    }
 }

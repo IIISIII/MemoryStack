@@ -1,7 +1,11 @@
 package edu.sns.memorystack
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -22,20 +26,69 @@ class OtherActivity : AppCompatActivity() {
        ActivityOtherBinding.inflate(layoutInflater)
     }
     private lateinit var clicked_uid :String
+    private var db : FirebaseFirestore = Firebase.firestore
+    var currentUser = Firebase.auth.currentUser
+    var currentuid = currentUser?.uid
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
+        println("------------------------!!!!!!!!!!!")
         val uid = intent.getStringExtra(UID)
         //firestore에서 email이 동일한 uid 찾기
-        var db : FirebaseFirestore = Firebase.firestore
+        //var db : FirebaseFirestore = Firebase.firestore
         val itemsCollectionRef = db.collection("users")
         CoroutineScope(Dispatchers.IO).launch {
               val user = AccountMethod.getUserProfile(uid!!)
               withContext(Dispatchers.Main){
                   binding.otherNickname.text = user?.nickname
               }
+        }
+        //팔로우
+        val follower = binding.otherFollow
+        follower.setOnClickListener {
+            follow(uid!!)
+        }
+        //팔로워 팔로잉 수 가져오기
+        if (uid != null) {
+            getFollowingFollower(uid)
+        }
+    }
+
+    fun follow(uid: String){
+        val follower = db.collection("follow").document(uid).collection("follower")
+        val following = db.collection("follow").document(uid).collection("following")
+
+        val itemMap = hashMapOf(
+            "uid" to currentuid
+        )
+
+        //팔로우 하고 있는 경우 / 취소
+        if(follower.get().equals(uid)){
+            follower.document("")
+        }
+        //팔로우 하고 있지 않은 경우 / 팔로우
+        else {
+            currentuid?.let { follower.document(it).set(itemMap) }
+        }
+    }
+    fun getFollowingFollower(uid : String){
+        val follower = db.collection("follow").document(uid).collection("follower")
+        val following = db.collection("follow").document(uid).collection("following")
+
+        //uid 가져와짐
+        following.get().addOnSuccessListener {
+            for(d in it){
+                println("following-----${d.id}, ${d["uid"]}")
+                binding.otherFollowing.text = "following :  ${it.size()}"
             }
+        }
+        follower.get().addOnSuccessListener {
+            for(d in it){
+                println("follower-----${d.id}, ${d["uid"]}")
+                binding.otherFollower.text = "follower :  ${it.size()}"
+            }
+        }
     }
 }
