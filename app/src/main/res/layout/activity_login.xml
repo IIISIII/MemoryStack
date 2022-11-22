@@ -97,16 +97,17 @@
                 android:id="@+id/app_logo"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="#cccccc"
+                android:background="#FFFFFF"
                 android:paddingLeft="20dp"
                 android:paddingTop="20dp"
                 android:paddingRight="20dp"
                 android:paddingBottom="20dp"
-                app:layout_constraintHeight_percent="0.3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.3"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
+                app:srcCompat="@drawable/stack_logo" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
