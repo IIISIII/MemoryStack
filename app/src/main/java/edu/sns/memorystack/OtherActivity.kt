@@ -12,6 +12,7 @@ import com.google.firebase.ktx.Firebase
 import edu.sns.memorystack.databinding.ActivityOtherBinding
 import edu.sns.memorystack.databinding.ProfileEditBinding
 import edu.sns.memorystack.method.AccountMethod
+import edu.sns.memorystack.method.FollowMethod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,11 +49,29 @@ class OtherActivity : AppCompatActivity() {
         //팔로우
         val follower = binding.otherFollow
         follower.setOnClickListener {
-            follow(uid!!)
+            CoroutineScope(Dispatchers.IO).launch {
+                if(FollowMethod.isFollowing(currentuid!!, uid!!)) {
+                    FollowMethod.unfollow(currentuid!!, uid!!)
+                }
+                else {
+                    FollowMethod.follow(currentuid!!, uid!!)
+                }
+                val result = FollowMethod.isFollowing(currentuid!!, uid!!)
+
+                val list = FollowMethod.getFollowingList(uid)
+
+                withContext(Dispatchers.Main) {
+                    if(result)
+                        binding.otherFollowing.text = "unfollow ${list.size}"
+                    else
+                        binding.otherFollowing.text = "follow ${list.size}"
+                }
+            }
+           //follow(uid!!)
         }
         //팔로워 팔로잉 수 가져오기
         if (uid != null) {
-            getFollowingFollower(uid)
+            //getFollowingFollower(uid)
         }
     }
 
@@ -66,7 +85,7 @@ class OtherActivity : AppCompatActivity() {
 
         //팔로우 하고 있는 경우 / 취소
         if(follower.get().equals(uid)){
-            follower.document("")
+
         }
         //팔로우 하고 있지 않은 경우 / 팔로우
         else {

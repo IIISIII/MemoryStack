@@ -12,6 +12,7 @@ import edu.sns.memorystack.data.PostData
 import edu.sns.memorystack.data.ProfileRepository
 import edu.sns.memorystack.method.AccountMethod
 import edu.sns.memorystack.method.PostMethod
+import edu.sns.memorystack.method.StorageMethod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,7 +52,7 @@ class PostListAdapter(): RecyclerView.Adapter<PostListAdapter.ViewHolder>()
                     }
                 }
 
-                PostMethod.getImage(post.imgPath)?.let {
+                StorageMethod.getImage(post.imgPath)?.let {
                     withContext(Dispatchers.Main) {
                         postImage.setImageBitmap(it)
                         postLoading.visibility = View.GONE

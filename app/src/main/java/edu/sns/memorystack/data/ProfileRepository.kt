@@ -19,6 +19,12 @@ class ProfileRepository private constructor()
     suspend fun getUserProfile(uid: String): UserProfile?
     {
         hashMap[uid]?.let {
+            val onSuccess: (UserProfile) -> Unit = { data ->
+                if(!data.compare(it))
+                    hashMap[uid] = data
+            }
+            val onFailed: () -> Unit = {}
+            AccountMethod.getUserProfile(uid, onSuccess, onFailed)
             return it
         }
         AccountMethod.getUserProfile(uid)?.let {

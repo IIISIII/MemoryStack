@@ -1,9 +1,14 @@
 package edu.sns.memorystack.method
 
+import android.content.ContentUris
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.provider.MediaStore
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import edu.sns.memorystack.data.UserProfile
 import kotlinx.coroutines.tasks.await
 
@@ -11,6 +16,8 @@ class AccountMethod
 {
     companion object
     {
+        //blocking ==========================================================================
+
         suspend fun createUser(profile: UserProfile): Boolean
         {
             if(profile.name.isBlank())
@@ -84,22 +91,16 @@ class AccountMethod
                 .get()
                 .await()
 
-            db.collection("users").get()
-                .addOnSuccessListener {
-                    for(document in it.documents) {
-                        val uid = document.id
-                    }
-                }
-
             val name = data.get(UserProfile.KEY_NAME).toString()
             val nickname = data.get(UserProfile.KEY_NICKNAME).toString()
             val email = data.get(UserProfile.KEY_EMAIL).toString()
             val phone = data.get(UserProfile.KEY_PHONE).toString()
+            val imagePath = data.get(UserProfile.KEY_PROFILE_IMG)?.toString()
 
             if(name.isNullOrBlank() || nickname.isNullOrBlank() || email.isNullOrBlank() || phone.isNullOrBlank())
                 return null
 
-            return UserProfile(name, nickname, email, null, phone)
+            return UserProfile(name, nickname, email, null, phone, imagePath)
         }
 
         //업데이트 성공하면 true 실패하면 false 반환
@@ -129,6 +130,29 @@ class AccountMethod
             return true
         }
 
+        suspend fun updateUserProfileImage(uid: String, fileId: Long): Boolean
+        {
+            val db = Firebase.firestore
+
+            val users = db.collection("users")
+
+            try {
+                val updateProfile = getUserProfile(uid) ?: return false
+
+                updateProfile.let {
+                    val imgPath = StorageMethod.uploadFile(uid, fileId, "profiles/${uid}/profile") ?: return false
+                    users
+                        .document(uid)
+                        .update(UserProfile.KEY_PROFILE_IMG, imgPath)
+                        .await()
+                } ?: return false
+
+                return true
+            } catch (err: Exception) {}
+
+            return false
+        }
+
         suspend fun getAllUid(): List<String>
         {
             val db = Firebase.firestore
@@ -142,6 +166,31 @@ class AccountMethod
                 list.add(document.id)
 
             return list;
+        }
+
+        //non-blocking ==========================================================================
+
+        fun getUserProfile(uid: String, onSuccess: (UserProfile) -> Unit, onFailed: () -> Unit)
+        {
+            val db = Firebase.firestore
+
+            db.collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener {
+                    val name = it.get(UserProfile.KEY_NAME).toString()
+                    val nickname = it.get(UserProfile.KEY_NICKNAME).toString()
+                    val email = it.get(UserProfile.KEY_EMAIL).toString()
+                    val phone = it.get(UserProfile.KEY_PHONE).toString()
+
+                    if(name.isNullOrBlank() || nickname.isNullOrBlank() || email.isNullOrBlank() || phone.isNullOrBlank())
+                        onSuccess(UserProfile(name, nickname, email, null, phone))
+                    else
+                        onFailed()
+                }
+                .addOnFailureListener {
+                    onFailed()
+                }
         }
     }
 }
