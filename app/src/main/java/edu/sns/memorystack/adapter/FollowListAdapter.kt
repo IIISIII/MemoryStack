@@ -3,6 +3,7 @@ package edu.sns.memorystack.adapter
 import android.accounts.Account
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.ClipDrawable.VERTICAL
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import edu.sns.memorystack.EditProfileActivity
 import edu.sns.memorystack.OtherActivity
@@ -32,7 +34,7 @@ class FollowListAdapter(private val userProfile: ArrayList<String>) : RecyclerVi
 
         //액티비티 이동
         fun bind(userProfile : String){
-            val name: TextView = itemView.findViewById(R.id.list_name)
+            //val name: TextView = itemView.findViewById(R.id.list_name)
             var nickname: TextView = itemView.findViewById(R.id.list_nickname)
             val follow = itemView.findViewById<Button>(R.id.button_follow)
             val follow_img = itemView.findViewById<ImageView>(R.id.follow_img)
@@ -46,11 +48,9 @@ class FollowListAdapter(private val userProfile: ArrayList<String>) : RecyclerVi
                         else if(follow.text == "unfollow")
                             follow.text = "follow"
                     }
-
-
                     //
                     email.text = profile?.email
-                    name.text = profile?.name
+                    //name.text = profile?.name
                     nickname.text = profile?.nickname
                     //
                     follow_img.setOnClickListener{
@@ -59,6 +59,7 @@ class FollowListAdapter(private val userProfile: ArrayList<String>) : RecyclerVi
                         context.startActivity(intent)
                     }
                 }
+
             }
         }
 

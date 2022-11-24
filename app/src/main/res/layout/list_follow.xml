@@ -1,49 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
+
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="5dp">
+
         <ImageView
             android:id="@+id/follow_img"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:layout_width="97dp"
+            android:layout_height="87dp"
             android:layout_margin="5dp"
-            android:src="@drawable/account" />
+            android:src="@drawable/usericon"
+            />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:orientation="vertical">
+            <!--
 
-            <TextView
-                android:id="@+id/list_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="이메일" />
             <TextView
                 android:id="@+id/list_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="이름"
                 android:layout_margin="5dp"/>
+            -->
             <TextView
                 android:id="@+id/list_nickname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="3dp"
                 android:text="닉네임"
-                android:layout_margin="5dp"/>
-
-            <Button
-                android:id="@+id/button_follow"
-                android:layout_width="263dp"
+                android:textSize="18sp" />
+            <TextView
+                android:id="@+id/list_email"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="3dp"
+                android:text="이메일" />
+
+            <android.widget.Button
+                android:id="@+id/button_follow"
+                android:layout_width="218dp"
+                android:layout_height="28dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
                 android:layout_weight="1"
-                android:text="follow" />
+                android:background="@drawable/btn_color"
+                android:text="follow"
+                android:textColor="#ffffff"
+                tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

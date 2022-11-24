@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.*
@@ -44,6 +45,9 @@ class FollowListFragment: Fragment()
         followListAdapter = FollowListAdapter(userArrayList)
 
         recyclerView.adapter = followListAdapter
+        //밑줄 그어 구분 짓기
+        val dividerItemDecoration = DividerItemDecoration(recyclerView.context, LinearLayoutManager(activity).orientation)
+        recyclerView.addItemDecoration(dividerItemDecoration)
 
         //변경시 값 가져오기
         EventChangeListener()
@@ -51,7 +55,7 @@ class FollowListFragment: Fragment()
 
     private fun EventChangeListener() {
         db = FirebaseFirestore.getInstance()
-        db.collection("users")//.orderBy("email", Query.Direction.ASCENDING) //오름차순 정렬
+        db.collection("users").orderBy("nickname", Query.Direction.ASCENDING) //오름차순 정렬
             .addSnapshotListener(object : EventListener<QuerySnapshot> {
                 override fun onEvent(
                     value: QuerySnapshot?,

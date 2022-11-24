@@ -81,7 +81,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/edit_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -89,16 +89,20 @@
         android:layout_marginTop="4dp"
         android:text="edit"
         app:layout_constraintStart_toEndOf="@+id/nickname"
-        app:layout_constraintTop_toBottomOf="@+id/following" />
+        app:layout_constraintTop_toBottomOf="@+id/following"
+        android:background="@drawable/btn_color"
+        android:textColor="#ffffff"/>
 
-    <Button
+    <android.widget.Button
         android:id="@+id/logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="LOGOUT"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/edit_profile"
-        app:layout_constraintTop_toTopOf="@+id/edit_profile" />
+        app:layout_constraintTop_toTopOf="@+id/edit_profile"
+        android:background="@drawable/btn_color"
+        android:textColor="#ffffff"/>
 
     <GridView
         android:layout_width="409dp"

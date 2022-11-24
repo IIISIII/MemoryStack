@@ -4,41 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:cardBackgroundColor="#eeeeee"
+    app:cardBackgroundColor="#FFFFFF"
     app:cardCornerRadius="20dp"
     app:cardPreventCornerOverlap="false"
     app:contentPadding="5dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="575dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout2"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_width="396dp"
+            android:layout_height="106dp"
+            android:layout_marginTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/user_profile_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
+                android:layout_width="80dp"
+                android:layout_height="69dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/account" />
+                app:layout_constraintVertical_bias="0.457"
+                app:srcCompat="@drawable/usericon" />
 
             <TextView
                 android:id="@+id/user_nickname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
                 android:text="nickname"
+                android:textSize="20sp"
                 app:layout_constraintStart_toEndOf="@+id/user_profile_image"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,53 +52,59 @@
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="4dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="16dp"
                 android:text="date"
+                android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/user_profile_image" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/post_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="352dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            android:maxLines="5"
+            android:minLines="1"
             android:paddingLeft="10dp"
             android:paddingTop="10dp"
             android:paddingRight="10dp"
             android:textColor="#000000"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintHorizontal_bias="0.444"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/post_image" />
 
         <ImageView
             android:id="@+id/post_image"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="396dp"
+            android:layout_height="368dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
             android:scaleType="fitCenter"
             android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@+id/post_text"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.515"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+            app:layout_constraintVertical_bias="0.481" />
 
         <ProgressBar
             android:id="@+id/image_loading"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/post_text"
+            android:layout_width="348dp"
+            android:layout_height="317dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/post_image"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.3"
             app:layout_constraintStart_toStartOf="@+id/post_image"
             app:layout_constraintTop_toTopOf="@+id/post_image" />
 
