@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.provider.MediaStore
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -153,12 +154,13 @@ class AccountMethod
             return false
         }
 
-        suspend fun getAllUid(): List<String>
+        suspend fun getAllUid(except: String): ArrayList<String>
         {
             val db = Firebase.firestore
             val list = ArrayList<String>()
 
             val users = db.collection("users")
+                .whereNotEqualTo(FieldPath.documentId(), except)
                 .get()
                 .await()
 

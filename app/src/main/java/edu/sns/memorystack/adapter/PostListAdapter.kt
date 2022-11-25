@@ -10,8 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import edu.sns.memorystack.R
 import edu.sns.memorystack.data.PostData
 import edu.sns.memorystack.data.ProfileRepository
-import edu.sns.memorystack.method.AccountMethod
-import edu.sns.memorystack.method.PostMethod
 import edu.sns.memorystack.method.StorageMethod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +24,7 @@ class PostListAdapter(): RecyclerView.Adapter<PostListAdapter.ViewHolder>()
     class ViewHolder(val layout: View): RecyclerView.ViewHolder(layout)
     {
         companion object {
-            val dateFormat = SimpleDateFormat("yyyy.MM.dd")
+            val dateFormat = SimpleDateFormat("yyyy.MM.dd HH:mm")
             val profileRepo = ProfileRepository.getInstance()
         }
 
@@ -44,6 +42,13 @@ class PostListAdapter(): RecyclerView.Adapter<PostListAdapter.ViewHolder>()
 
             postText.text = post.text
             date.text = dateFormat.format(post.date.toDate())
+
+            postImage.setOnClickListener {
+                postImage.scaleType = if(postImage.scaleType == ImageView.ScaleType.CENTER_CROP)
+                    ImageView.ScaleType.FIT_CENTER
+                else
+                    ImageView.ScaleType.CENTER_CROP
+            }
 
             CoroutineScope(Dispatchers.IO).launch {
                 profileRepo.getUserProfile(post.uid)?.let {

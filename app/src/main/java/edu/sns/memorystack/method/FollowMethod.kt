@@ -57,7 +57,7 @@ class FollowMethod
             return false
         }
 
-        suspend fun getFollowingList(uid: String): List<String>
+        suspend fun getFollowingList(uid: String): ArrayList<String>
         {
             val list = ArrayList<String>()
             try {
@@ -70,15 +70,9 @@ class FollowMethod
 
                 val followList = following.get().await()
 
-                for(f in followList) {
-                    Log.i("test", f.id)
+                for(f in followList)
                     list.add(f.id)
-                }
-                print(list.size)
-            } catch (err: Exception) {
-                Log.i("test", err.message.toString())
-            }
-            Log.i("test", list.size.toString())
+            } catch (err: Exception) {}
             return list
         }
     }

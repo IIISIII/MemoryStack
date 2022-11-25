@@ -58,7 +58,7 @@ class OtherActivity : AppCompatActivity() {
                 }
                 val result = FollowMethod.isFollowing(currentuid!!, uid!!)
 
-                val list = FollowMethod.getFollowingList(uid)
+                val list = FollowMethod.getFollowingList(currentuid!!)
 
                 withContext(Dispatchers.Main) {
                     if(result)

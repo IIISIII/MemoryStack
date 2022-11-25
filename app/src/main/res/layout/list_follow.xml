@@ -37,24 +37,30 @@
             -->
             <TextView
                 android:id="@+id/list_nickname"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="3dp"
+                android:layout_marginRight="10dp"
+                android:singleLine="true"
                 android:text="닉네임"
                 android:textSize="18sp" />
+
             <TextView
                 android:id="@+id/list_email"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="3dp"
+                android:layout_marginRight="10dp"
+                android:singleLine="true"
                 android:text="이메일" />
 
             <android.widget.Button
                 android:id="@+id/button_follow"
-                android:layout_width="218dp"
+                android:layout_width="match_parent"
                 android:layout_height="28dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"

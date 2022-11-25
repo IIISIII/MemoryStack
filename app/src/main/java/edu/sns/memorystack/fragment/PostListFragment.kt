@@ -14,6 +14,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import edu.sns.memorystack.R
 import edu.sns.memorystack.adapter.PostListAdapter
+import edu.sns.memorystack.method.FollowMethod
 import edu.sns.memorystack.method.PostMethod
 import kotlinx.coroutines.*
 
@@ -40,7 +41,7 @@ class PostListFragment: Fragment(), OnRefreshListener
         refreshLayout = view.findViewById(R.id.refresh_layout)
         refreshLayout.setOnRefreshListener(this)
 
-        postList = view.findViewById<RecyclerView>(R.id.post_list)
+        postList = view.findViewById(R.id.post_list)
 
         val listManager = LinearLayoutManager(view.context)
         listAdapter = PostListAdapter()
@@ -55,7 +56,10 @@ class PostListFragment: Fragment(), OnRefreshListener
         }
 
         job = CoroutineScope(Dispatchers.IO).launch {
-            val posts = PostMethod.getPostsByUid(listOf(currentUser.uid))
+            val userList = FollowMethod.getFollowingList(currentUser.uid)
+            userList.add(currentUser.uid)
+
+            val posts = PostMethod.getPostsByUid(userList)
             withContext(Dispatchers.Main) {
                 listAdapter.setItemList(posts)
             }
@@ -74,7 +78,10 @@ class PostListFragment: Fragment(), OnRefreshListener
 
         job?.cancel()
         job = CoroutineScope(Dispatchers.IO).launch {
-            val posts = PostMethod.getPostsByUid(listOf(currentUser.uid))
+            val userList = FollowMethod.getFollowingList(currentUser.uid)
+            userList.add(currentUser.uid)
+
+            val posts = PostMethod.getPostsByUid(userList)
             withContext(Dispatchers.Main) {
                 listAdapter.setItemList(posts)
                 refreshLayout.isRefreshing = false
