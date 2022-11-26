@@ -3,6 +3,7 @@ package edu.sns.memorystack
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -41,16 +42,18 @@ class GalleryActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         finish()
     }
 
+    private val permission = if(Build.VERSION.SDK_INT >= 33) Manifest.permission.READ_MEDIA_IMAGES else Manifest.permission.READ_EXTERNAL_STORAGE
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         val requestBtn = binding.requestPermission
         requestBtn.setOnClickListener {
-            requestSinglePermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+            requestSinglePermission(permission)
         }
 
-        if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+        if(checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED)
             init()
     }
 
@@ -62,7 +65,7 @@ class GalleryActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     private fun init()
     {
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED)
             return
 
         val requestBtn = binding.requestPermission

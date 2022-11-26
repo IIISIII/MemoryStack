@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -45,6 +46,8 @@ class PostFragment: Fragment(), OnRefreshListener
         startActivity(intent)
     }
 
+    private val permission = if(Build.VERSION.SDK_INT >= 33) Manifest.permission.READ_MEDIA_IMAGES else Manifest.permission.READ_EXTERNAL_STORAGE
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         return inflater.inflate(R.layout.post_page, container, false)
@@ -60,10 +63,10 @@ class PostFragment: Fragment(), OnRefreshListener
 
         val requestBtn = view.findViewById<Button>(R.id.request_permission)
         requestBtn.setOnClickListener {
-            requestSinglePermission(context, view, Manifest.permission.READ_EXTERNAL_STORAGE)
+            requestSinglePermission(context, view, permission)
         }
 
-        if(context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+        if(context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED)
             init(context, view)
     }
 
@@ -75,7 +78,7 @@ class PostFragment: Fragment(), OnRefreshListener
 
     private fun init(context: Context, layout: View)
     {
-        if (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+        if (context.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED)
             return
 
         val requestBtn = layout.findViewById<Button>(R.id.request_permission)

@@ -39,6 +39,7 @@ class PostMessagingService: FirebaseMessagingService()
 
     override fun onMessageReceived(message: RemoteMessage)
     {
+        super.onMessageReceived(message)
         Log.i("push", "onMessage")
 
         //send from server
