@@ -102,7 +102,7 @@ class PostActivity : AppCompatActivity()
                     val uid = currentUser!!.uid
                     val result = PostMethod.post(uid, id, postText)
 
-                    val profile = repo.getUserProfile(uid)
+                    val profile = repo.getUserProfile(uid, true)
 
                     sendPushMessage(profile!!.name, postText)
 

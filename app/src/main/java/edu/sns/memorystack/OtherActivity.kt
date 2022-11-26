@@ -79,7 +79,7 @@ class OtherActivity : AppCompatActivity() {
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            val profile = repo.getUserProfile(uid)
+            val profile = repo.getUserProfile(uid, false)
             profile?.let { profile ->
                 val posts = PostMethod.getPostsByUid(listOf(uid))
                 val followers = FollowMethod.getFollowerList(uid)

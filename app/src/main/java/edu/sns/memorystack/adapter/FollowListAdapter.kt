@@ -71,7 +71,7 @@ class FollowListAdapter(private var uids: ArrayList<String?>, private val curren
             }
 
             CoroutineScope(Dispatchers.IO).launch {
-                val profile = repo.getUserProfile(uid)
+                val profile = repo.getUserProfile(uid, false)
                 val isFollowing = FollowMethod.isFollowing(currentUid, uid)
                 withContext(Dispatchers.Main) {
                     email.text = profile?.email

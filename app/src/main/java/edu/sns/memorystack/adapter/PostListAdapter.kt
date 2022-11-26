@@ -52,7 +52,7 @@ class PostListAdapter(): RecyclerView.Adapter<RecyclerView.ViewHolder>()
             }
 
             CoroutineScope(Dispatchers.IO).launch {
-                val profile = repo.getUserProfile(post.uid)
+                val profile = repo.getUserProfile(post.uid, false)
                 profile?.let {
                     withContext(Dispatchers.Main) {
                         userNickname.text = it.nickname

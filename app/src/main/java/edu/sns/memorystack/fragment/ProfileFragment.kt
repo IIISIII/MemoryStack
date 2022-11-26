@@ -70,14 +70,12 @@ class ProfileFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener
         val currentUser = auth.currentUser ?: return
 
         init(currentUser.uid)
-
-        refreshLayout.isRefreshing = false
     }
 
     private fun init(uid: String)
     {
         CoroutineScope(Dispatchers.IO).launch {
-            val profile = repo.getUserProfile(uid)
+            val profile = repo.getUserProfile(uid, true)
             val posts = PostMethod.getPostsByUid(listOf(uid))
             val followers = FollowMethod.getFollowerList(uid)
 
@@ -85,6 +83,8 @@ class ProfileFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener
                 nickname.text = profile?.nickname
                 postCount.text = posts.size.toString()
                 followerCount.text = followers.size.toString()
+
+                refreshLayout.isRefreshing = false
             }
 
             profile?.imgPath?.let {
