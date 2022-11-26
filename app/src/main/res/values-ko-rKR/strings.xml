@@ -16,7 +16,7 @@
     <string name="hint_password_confirm">비밀번호 확인</string>
     <string name="text_post_count">게시물</string>
     <string name="text_follower">팔로워</string>
-    <string name="text_edit_profile">프로필 변경</string>
+    <string name="text_edit_profile">프로필 편집</string>
     <string name="text_post">전송</string>
     <string name="text_save">저장</string>
     <string name="text_logout">로그아웃</string>
@@ -30,4 +30,10 @@
     <string name="text_deny">거부</string>
     <string name="text_follow_btn">팔로우</string>
     <string name="text_unfollow_btn">언팔로우</string>
+    <string name="label_login">로그인</string>
+    <string name="label_signin">회원가입</string>
+    <string name="label_post">게시물 작성</string>
+    <string name="label_gallery">이미지 선택</string>
+    <string name="label_profile">프로필 편집</string>
+    <string name="label_follow">프로필</string>
 </resources>

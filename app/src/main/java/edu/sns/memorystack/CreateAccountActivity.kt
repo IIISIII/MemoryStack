@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MenuItem
 import android.widget.Button
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -46,6 +47,9 @@ class CreateAccountActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setTitle(R.string.label_signin)
+
         viewModel = ViewModelProvider(this)[SceneViewModel::class.java]
 
         scene1 = Scene.getSceneForLayout(binding.sceneRoot, R.layout.create_account_scene1, this)
@@ -59,6 +63,16 @@ class CreateAccountActivity : AppCompatActivity()
         scene2.setEnterAction {
             sceneSecondInit()
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
+    {
+        when(item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onBackPressed()

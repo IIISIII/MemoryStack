@@ -32,4 +32,10 @@
     <string name="text_deny">Deny</string>
     <string name="text_follow_btn">Follow</string>
     <string name="text_unfollow_btn">Unfollow</string>
+    <string name="label_login">Login</string>
+    <string name="label_signin">Sign in</string>
+    <string name="label_post">Posting</string>
+    <string name="label_gallery">Select Image</string>
+    <string name="label_profile">Edit Profile</string>
+    <string name="label_follow">Profile</string>
 </resources>

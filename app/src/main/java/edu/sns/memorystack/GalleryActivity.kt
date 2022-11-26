@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -48,6 +49,9 @@ class GalleryActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setTitle(R.string.label_gallery)
+
         val requestBtn = binding.requestPermission
         requestBtn.setOnClickListener {
             requestSinglePermission(permission)
@@ -61,6 +65,16 @@ class GalleryActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     {
         refresh()
         binding.refreshLayout.isRefreshing = false
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
+    {
+        when(item.itemId) {
+            android.R.id.home -> {
+                finish()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun init()

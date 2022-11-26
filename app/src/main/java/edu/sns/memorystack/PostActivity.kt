@@ -49,6 +49,7 @@ class PostActivity : AppCompatActivity()
         setContentView(binding.root)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setTitle(R.string.label_post)
 
         auth = Firebase.auth
         currentUser = auth.currentUser
