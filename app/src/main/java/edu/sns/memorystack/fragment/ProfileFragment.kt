@@ -52,6 +52,8 @@ class ProfileFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener
         postCount = view.findViewById<TextView>(R.id.post_count)
         followerCount = view.findViewById<TextView>(R.id.follower_count)
 
+        refreshLayout.setOnRefreshListener(this)
+
         val edit = view.findViewById<Button>(R.id.follow_btn)
 
         edit.setOnClickListener {
