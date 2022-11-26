@@ -1,15 +1,11 @@
 package edu.sns.memorystack.method
 
-import android.content.ContentUris
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.provider.MediaStore
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
+import edu.sns.memorystack.data.PostData
 import edu.sns.memorystack.data.UserProfile
 import kotlinx.coroutines.tasks.await
 
@@ -160,14 +156,103 @@ class AccountMethod
             val list = ArrayList<String>()
 
             val users = db.collection("users")
-                .whereNotEqualTo(FieldPath.documentId(), except)
+                .orderBy(UserProfile.KEY_NICKNAME, Query.Direction.ASCENDING)
                 .get()
                 .await()
 
-            for(document in users)
-                list.add(document.id)
+            for(document in users) {
+                if(document.id != except)
+                    list.add(document.id)
+            }
 
             return list;
+        }
+
+        data class Capsule(val list: ArrayList<String>, val last: DocumentSnapshot?)
+
+        suspend fun getUserIdLimit(except: String, limit: Int, last: DocumentSnapshot?): Capsule
+        {
+            val db = Firebase.firestore
+            val list = ArrayList<String>()
+
+            var lastDoc: DocumentSnapshot? = null
+
+            val users = db.collection("users")
+                .orderBy(UserProfile.KEY_NICKNAME, Query.Direction.ASCENDING)
+
+            val query = if(last == null)
+                    users
+                else
+                    users.startAfter(last)
+
+            val result = query
+                .limit((limit + 1).toLong())
+                .get()
+                .await()
+
+            var count = 0
+            for(document in result) {
+                if(count == limit)
+                    break
+                if(document.id != except) {
+                    list.add(document.id)
+                    lastDoc = document
+                    count ++
+                }
+            }
+
+            return Capsule(list, lastDoc);
+        }
+
+        suspend fun registerToken(token: String)
+        {
+            val user = Firebase.auth.currentUser ?: return
+            val uid = user.uid
+
+            val db = Firebase.firestore
+
+            val result = db.collection("users")
+                .document(uid)
+                .update(UserProfile.KEY_TOKEN, token)
+                .await()
+        }
+
+        suspend fun getTokenById(uids: ArrayList<String>, except: String?): ArrayList<String>
+        {
+            val subLists = ArrayList<List<String>>()
+            var index = 0;
+            while(index < uids.size) {
+                if(index + 10 < uids.size)
+                    subLists.add(uids.subList(index, index + 10))
+                else
+                    subLists.add(uids.subList(index, uids.size))
+                index += 10
+            }
+
+            val list = ArrayList<String>()
+
+            val db = Firebase.firestore
+            val users = db.collection("users")
+
+            val tasks = ArrayList<Task<QuerySnapshot>>()
+            for(userlist in subLists) {
+                val result = users
+                    .whereIn(FieldPath.documentId(), userlist)
+                    .get()
+                tasks.add(result)
+            }
+            for(task in tasks) {
+                val result = task.await()
+                for(post in result.documents) {
+                    if(post.id != except) {
+                        post.getString(UserProfile.KEY_TOKEN)?.let {
+                            list.add(it)
+                        }
+                    }
+                }
+            }
+
+            return list
         }
 
         //non-blocking ==========================================================================

@@ -1,13 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- 버튼 색깔 -->
-    <solid android:color="#CC000000"/>
-    <!-- 네 귀퉁이? 모양 -->
-    <corners
-        android:bottomLeftRadius="10dp"
-        android:bottomRightRadius="10dp"
-        android:topLeftRadius="10dp"
-        android:topRightRadius="10dp"/>
-    <!-- 테두리 색깔 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-</shape>
+    <item android:state_enabled="true"
+        android:state_pressed="false">
+        <shape>
+            <!-- 버튼 색깔 -->
+            <solid android:color="#CC000000"/>
+            <!-- 네 귀퉁이? 모양 -->
+            <corners
+                android:bottomLeftRadius="10dp"
+                android:bottomRightRadius="10dp"
+                android:topLeftRadius="10dp"
+                android:topRightRadius="10dp"/>
+            <!-- 테두리 색깔 -->
+        </shape>
+    </item>
+
+    <item android:state_enabled="true"
+        android:state_pressed="true">
+        <shape>
+            <!-- 버튼 색깔 -->
+            <solid android:color="#CC444444"/>
+            <!-- 네 귀퉁이? 모양 -->
+            <corners
+                android:bottomLeftRadius="10dp"
+                android:bottomRightRadius="10dp"
+                android:topLeftRadius="10dp"
+                android:topRightRadius="10dp"/>
+            <!-- 테두리 색깔 -->
+        </shape>
+    </item>
+
+    <item android:state_enabled="false">
+        <shape>
+            <!-- 버튼 색깔 -->
+            <solid android:color="#CCdddddd"/>
+            <!-- 네 귀퉁이? 모양 -->
+            <corners
+                android:bottomLeftRadius="10dp"
+                android:bottomRightRadius="10dp"
+                android:topLeftRadius="10dp"
+                android:topRightRadius="10dp"/>
+            <!-- 테두리 색깔 -->
+        </shape>
+    </item>
+
+</selector>

@@ -4,25 +4,20 @@
         android:id="@+id/home"
         android:enabled="true"
         android:icon="@drawable/home"
-        android:title="Home" />
+        android:title="@string/text_home" />
     <item
         android:id="@+id/follow"
         android:enabled="true"
         android:icon="@drawable/people"
-        android:title="Follow" />
+        android:title="@string/text_follow_list" />
     <item
         android:id="@+id/post"
         android:enabled="true"
         android:icon="@drawable/add_post"
-        android:title="Post" />
-    <item
-        android:id="@+id/dm"
-        android:enabled="true"
-        android:icon="@drawable/direct_message"
-        android:title="DM" />
+        android:title="@string/text_post_page" />
     <item
         android:id="@+id/profile"
         android:enabled="true"
         android:icon="@drawable/account"
-        android:title="Profile" />
+        android:title="@string/text_profile" />
 </menu>

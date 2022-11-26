@@ -9,28 +9,40 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import edu.sns.memorystack.OtherActivity
 import edu.sns.memorystack.R
+import edu.sns.memorystack.data.DataRepository
+import edu.sns.memorystack.data.PostData
+import edu.sns.memorystack.databinding.FollowListItemBinding
+import edu.sns.memorystack.databinding.PostListLoadingItemBinding
 import edu.sns.memorystack.method.AccountMethod
 import edu.sns.memorystack.method.FollowMethod
+import edu.sns.memorystack.method.StorageMethod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class FollowListAdapter(private var uids: ArrayList<String>, private val currentUid: String) : RecyclerView.Adapter<FollowListAdapter.ViewHolder>()
+class FollowListAdapter(private var uids: ArrayList<String?>, private val currentUid: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
+    companion object
+    {
+        const val TYPE_ITEM = 0
+        const val TYPE_LOADING = 1
+    }
 
-    //viewHolder 생성, 아이템
-     class ViewHolder(itemView: View,  val context: Context): RecyclerView.ViewHolder(itemView)
+    class ItemViewHolder(val binding: FollowListItemBinding,  val context: Context): ViewHolder(binding.root)
     {
         private var flag = false
+        private val repo = DataRepository.getInstance()
 
-        fun bind(uid : String, currentUid: String){
-            val nickname: TextView = itemView.findViewById(R.id.list_nickname)
-            val follow = itemView.findViewById<Button>(R.id.button_follow)
-            val follow_img = itemView.findViewById<ImageView>(R.id.follow_img)
-            val email = itemView.findViewById<TextView>(R.id.list_email)
+        fun bind(uid : String, currentUid: String)
+        {
+            val nickname: TextView = binding.listNickname
+            val follow = binding.buttonFollow
+            val follow_img = binding.followImg
+            val email = binding.listEmail
 
             follow.setOnClickListener {
                 if(flag)
@@ -46,54 +58,99 @@ class FollowListAdapter(private var uids: ArrayList<String>, private val current
 
                     val result = FollowMethod.isFollowing(currentUid, uid);
                     withContext(Dispatchers.Main) {
-                        follow.text = if(result) "unfollow" else "follow"
+                        follow.setText(if(result) R.string.text_unfollow_btn else R.string.text_follow_btn)
                         flag = false
                     }
                 }
             }
 
+            binding.root.setOnClickListener{
+                val intent = Intent(context, OtherActivity::class.java)
+                intent.putExtra(OtherActivity.UID, uid)
+                context.startActivity(intent)
+            }
+
             CoroutineScope(Dispatchers.IO).launch {
-                val profile = AccountMethod.getUserProfile(uid)
+                val profile = repo.getUserProfile(uid)
                 val isFollowing = FollowMethod.isFollowing(currentUid, uid)
-                withContext(Dispatchers.Main){
+                withContext(Dispatchers.Main) {
                     email.text = profile?.email
                     nickname.text = profile?.nickname
-                    follow.text = if(isFollowing) "unfollow" else "follow"
-
-                    follow_img.setOnClickListener{
-                        val intent = Intent(context, OtherActivity::class.java)
-                        intent.putExtra(OtherActivity.UID, uid)
-                        context.startActivity(intent)
-                    }
+                    follow.setText(if(isFollowing) R.string.text_unfollow_btn else R.string.text_follow_btn)
                 }
-
+                profile?.imgPath?.let {
+                    val image = repo.getImage(it)
+                    withContext(Dispatchers.Main) {
+                        follow_img.setImageBitmap(image)
+                    }
+                } ?:
+                    withContext(Dispatchers.Main) {
+                        follow_img.setImageResource(R.drawable.usericon_small)
+                    }
             }
         }
+    }
 
+    class LoadingViewHolder(private val binding: PostListLoadingItemBinding): ViewHolder(binding.root)
 
-    }
-    //레이아웃 지정
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
     {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.list_follow, parent, false)
-        val view = ViewHolder(itemView, parent.context)
-        return view
+        val inflater = LayoutInflater.from(parent.context)
+        return when(viewType) {
+            TYPE_ITEM -> {
+                val binding = FollowListItemBinding.inflate(inflater, parent, false)
+                ItemViewHolder(binding, parent.context)
+            }
+            else -> {
+                val binding = PostListLoadingItemBinding.inflate(inflater, parent, false)
+                LoadingViewHolder(binding)
+            }
+        }
     }
-    //ArrayList에 각 항목 대입
-    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int)
+
+    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int)
     {
-        val user : String = uids[position]
-        viewHolder.bind(user, currentUid)
+        if(viewHolder is ItemViewHolder) {
+            val user : String = uids[position]!!
+            viewHolder.bind(user, currentUid)
+        }
     }
-    //사이즈만틈 반환
+
     override fun getItemCount(): Int
     {
         return uids.size
     }
 
-    fun setUserList(list: ArrayList<String>)
+    override fun getItemViewType(position: Int): Int
     {
-        uids = list
+        return when(uids[position]) {
+            null -> TYPE_LOADING
+            else -> TYPE_ITEM
+        }
+    }
+
+    fun addItemList(list: ArrayList<String>)
+    {
+        val size = uids.size
+        uids.addAll(list)
+        notifyItemInserted(size)
+        notifyItemRangeChanged(size, list.size)
+    }
+
+    fun clear()
+    {
+        uids.clear()
         notifyDataSetChanged()
+    }
+
+    fun removeLoading()
+    {
+        if(uids.size == 0)
+            return
+        val last = uids.lastIndex
+        if(uids[last] == null) {
+            uids.removeAt(last)
+            notifyItemChanged(last)
+        }
     }
 }

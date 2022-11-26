@@ -3,6 +3,7 @@ package edu.sns.memorystack
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -13,11 +14,20 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import edu.sns.memorystack.databinding.ActivityMainBinding
 import edu.sns.memorystack.fragment.*
+import edu.sns.memorystack.method.AccountMethod
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListener
 {
+    companion object {
+        const val KEY_REFRESH = "refresh"
+    }
+
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -31,10 +41,10 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        //logo표시
+
         supportActionBar?.setIcon(R.drawable.stack_logo)
-        getSupportActionBar()?.setDisplayUseLogoEnabled(true)
-        getSupportActionBar()?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setDisplayUseLogoEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
 
         auth = Firebase.auth
         currentUser = auth.currentUser
@@ -42,6 +52,11 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
             moveToLoginActivity()
         else
             init()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
     }
 
     override fun onResume()
@@ -73,6 +88,15 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
         binding.navigation.setOnItemSelectedListener(this)
 
         init = true
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { // it: Task<String!>
+            val token = if (it.isSuccessful) it.result else null
+            token?.let {
+                CoroutineScope(Dispatchers.IO).launch {
+                    AccountMethod.registerToken(token)
+                }
+            }
+        }
     }
 
     private fun moveToLoginActivity()
@@ -85,7 +109,7 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     {
         override fun getItemCount(): Int
         {
-            return 5
+            return 4
         }
 
         override fun createFragment(position: Int): Fragment
@@ -94,7 +118,6 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
                 0 -> PostListFragment()
                 1 -> FollowListFragment()
                 2 -> PostFragment()
-                3 -> DirectMessageFragment()
                 else -> ProfileFragment()
             }
         }
@@ -114,12 +137,8 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
                 binding.container.currentItem = 2
                 return true
             }
-            R.id.dm -> {
-                binding.container.currentItem = 3
-                return true
-            }
             R.id.profile -> {
-                binding.container.currentItem = 4
+                binding.container.currentItem = 3
                 return true
             }
             else -> {

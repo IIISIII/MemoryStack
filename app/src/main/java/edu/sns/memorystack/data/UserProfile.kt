@@ -10,6 +10,7 @@ data class UserProfile(val name: String = "", var nickname: String = "", val ema
         const val KEY_PASSWORD = "password"
         const val KEY_PHONE = "phone"
         const val KEY_PROFILE_IMG = "profile_img"
+        const val KEY_TOKEN = "token"
     }
 
     fun toHashMap(): HashMap<String, String> {

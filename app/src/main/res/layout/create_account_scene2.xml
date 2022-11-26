@@ -19,7 +19,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="E-mail"
+            android:hint="@string/hint_email"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -39,14 +39,14 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
+            android:hint="@string/hint_password"
             android:password="true"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/password_match_text"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/TextInputLayoutStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -60,7 +60,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Confirm Password"
+            android:hint="@string/hint_password_confirm"
             android:password="true"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -69,13 +69,15 @@
         android:id="@+id/create_account_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create Account"
+        android:background="@drawable/btn_color"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:text="@string/text_signin"
+        android:textColor="#ffffff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/back_button"
-        app:layout_constraintTop_toTopOf="@+id/back_button"
-        android:background="@drawable/btn_color"
-        android:textColor="#ffffff"/>
+        app:layout_constraintTop_toTopOf="@+id/back_button" />
 
     <android.widget.Button
         android:id="@+id/back_button"
@@ -83,12 +85,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="24dp"
-        android:text="Back"
+        android:background="@drawable/btn_color"
+        android:text="@string/text_back"
+        android:textColor="#ffffff"
         app:layout_constraintEnd_toStartOf="@+id/create_account_button"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_match_text"
-        android:background="@drawable/btn_color"
-        android:textColor="#ffffff"/>
+        app:layout_constraintTop_toBottomOf="@+id/password_match_text" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

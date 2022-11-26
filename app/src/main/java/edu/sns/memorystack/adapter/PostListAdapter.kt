@@ -1,44 +1,45 @@
 package edu.sns.memorystack.adapter
 
+import android.graphics.Outline
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
 import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import edu.sns.memorystack.R
 import edu.sns.memorystack.data.PostData
-import edu.sns.memorystack.data.ProfileRepository
-import edu.sns.memorystack.method.StorageMethod
+import edu.sns.memorystack.data.DataRepository
+import edu.sns.memorystack.databinding.PostListItemBinding
+import edu.sns.memorystack.databinding.PostListLoadingItemBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 
-class PostListAdapter(): RecyclerView.Adapter<PostListAdapter.ViewHolder>()
+class PostListAdapter(): RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
-    private var itemList: ArrayList<PostData>? = null
+    private var itemList: ArrayList<PostData?> = ArrayList()
+    private val VIEW_TYPE_ITEM = 0
+    private val VIEW_TYPE_LOADING = 1
 
-    class ViewHolder(val layout: View): RecyclerView.ViewHolder(layout)
+    class ItemViewHolder(private val binding: PostListItemBinding): RecyclerView.ViewHolder(binding.root)
     {
         companion object {
             val dateFormat = SimpleDateFormat("yyyy.MM.dd HH:mm")
-            val profileRepo = ProfileRepository.getInstance()
+            val repo = DataRepository.getInstance()
         }
 
-        fun bind(post: PostData?)
+        fun bind(post: PostData)
         {
-            if(post == null)
-                return
-
-            val userImage = layout.findViewById<ImageView>(R.id.user_profile_image)
-            val userNickname = layout.findViewById<TextView>(R.id.user_nickname)
-            val date = layout.findViewById<TextView>(R.id.date)
-            val postImage = layout.findViewById<ImageView>(R.id.post_image)
-            val postText = layout.findViewById<TextView>(R.id.post_text)
-            val postLoading = layout.findViewById<ProgressBar>(R.id.image_loading)
+            val userImage = binding.userProfileImage
+            val userNickname = binding.userNickname
+            val date = binding.date
+            val postImage = binding.postImage
+            val postText = binding.postText
+            val postLoading = binding.imageLoading
 
             postText.text = post.text
             date.text = dateFormat.format(post.date.toDate())
@@ -51,13 +52,24 @@ class PostListAdapter(): RecyclerView.Adapter<PostListAdapter.ViewHolder>()
             }
 
             CoroutineScope(Dispatchers.IO).launch {
-                profileRepo.getUserProfile(post.uid)?.let {
+                val profile = repo.getUserProfile(post.uid)
+                profile?.let {
                     withContext(Dispatchers.Main) {
                         userNickname.text = it.nickname
                     }
+
+                    it.imgPath?.let { path ->
+                        val image = repo.getImage(path)
+                        withContext(Dispatchers.Main) {
+                            userImage.setImageBitmap(image)
+                        }
+                    } ?:
+                        withContext(Dispatchers.Main) {
+                            userImage.setImageResource(R.drawable.usericon)
+                        }
                 }
 
-                StorageMethod.getImage(post.imgPath)?.let {
+                repo.getImage(post.imgPath)?.let {
                     withContext(Dispatchers.Main) {
                         postImage.setImageBitmap(it)
                         postLoading.visibility = View.GONE
@@ -68,28 +80,65 @@ class PostListAdapter(): RecyclerView.Adapter<PostListAdapter.ViewHolder>()
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
+    class LoadingViewHolder(private val binding: PostListLoadingItemBinding): RecyclerView.ViewHolder(binding.root)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
     {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.post_list_item, parent, false)
-        return ViewHolder(view)
+        val inflater = LayoutInflater.from(parent.context)
+        return when(viewType) {
+            VIEW_TYPE_ITEM -> {
+                val binding = PostListItemBinding.inflate(inflater, parent, false)
+                ItemViewHolder(binding)
+            }
+            else -> {
+                val binding = PostListLoadingItemBinding.inflate(inflater, parent, false)
+                LoadingViewHolder(binding)
+            }
+        }
+
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)
     {
-        holder.bind(itemList?.get(position))
+        if(holder is ItemViewHolder)
+            holder.bind(itemList[position]!!)
     }
 
     override fun getItemCount(): Int
     {
-        return if(itemList == null)
-            0
-        else
-            itemList!!.size
+        return itemList.size
     }
 
-    fun setItemList(list: ArrayList<PostData>)
+    override fun getItemViewType(position: Int): Int {
+        return when(itemList[position]) {
+            null -> VIEW_TYPE_LOADING
+            else -> VIEW_TYPE_ITEM
+        }
+    }
+
+    fun addItemList(list: ArrayList<PostData>)
     {
-        itemList = list
+        val size = itemList.size
+        itemList.addAll(list)
+        itemList.add(null)
+        notifyItemInserted(size)
+        notifyItemRangeChanged(size, list.size)
+    }
+
+    fun clear()
+    {
+        itemList.clear()
         notifyDataSetChanged()
+    }
+
+    fun removeLoading()
+    {
+        if(itemList.size == 0)
+            return
+        val last = itemList.lastIndex
+        if(itemList[last] == null) {
+            itemList.removeAt(last)
+            notifyItemChanged(last)
+        }
     }
 }

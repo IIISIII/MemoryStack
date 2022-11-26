@@ -19,7 +19,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Username"
+            android:hint="@string/hint_name"
             android:inputType="text"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -39,7 +39,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nickname"
+            android:hint="@string/hint_nickname"
             android:inputType="text"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -59,7 +59,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Phone"
+            android:hint="@string/hint_phone"
             android:inputType="phone"
             android:maxLength="13"
             android:singleLine="true" />
@@ -70,11 +70,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Next"
+        android:background="@drawable/btn_color"
+        android:text="@string/text_next"
+        android:textColor="#ffffff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/phone_text"
-        android:background="@drawable/btn_color"
-        android:textColor="#ffffff"/>
+        app:layout_constraintTop_toBottomOf="@+id/phone_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

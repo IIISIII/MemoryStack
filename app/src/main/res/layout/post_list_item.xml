@@ -23,19 +23,29 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/user_profile_image"
+            <LinearLayout
+                android:id="@+id/user_profile_image_cover"
                 android:layout_width="80dp"
                 android:layout_height="69dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:scaleType="centerCrop"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.457"
-                app:srcCompat="@drawable/usericon" />
+                app:layout_constraintVertical_bias="0.457">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/user_profile_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/usericon_small"
+                    app:civ_border_color="@color/black"
+                    app:civ_border_overlay="true"
+                    app:civ_border_width="3dp" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/user_nickname"
@@ -44,11 +54,11 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:singleLine="true"
-                android:text="nickname"
+                android:text="..."
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/user_profile_image"
-                app:layout_constraintTop_toTopOf="@+id/user_profile_image" />
+                app:layout_constraintStart_toEndOf="@+id/user_profile_image_cover"
+                app:layout_constraintTop_toTopOf="@+id/user_profile_image_cover" />
 
             <TextView
                 android:id="@+id/date"
@@ -57,12 +67,12 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:singleLine="true"
-                android:text="date"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/user_profile_image"
+                android:text="..."
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/user_profile_image_cover"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/user_profile_image" />
+                app:layout_constraintStart_toEndOf="@+id/user_profile_image_cover" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
@@ -70,7 +80,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:ellipsize="end"
             android:maxLines="3"
@@ -82,7 +91,6 @@
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.444"
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView

@@ -2,10 +2,9 @@ package edu.sns.memorystack.fragment
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +16,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
+import edu.sns.memorystack.PostActivity
 import edu.sns.memorystack.R
 import edu.sns.memorystack.adapter.GalleryListAdapter
+import edu.sns.memorystack.method.StorageMethod
 
 class PostFragment: Fragment(), OnRefreshListener
 {
@@ -30,12 +31,18 @@ class PostFragment: Fragment(), OnRefreshListener
         val context = requireContext()
         if (!it) {
             AlertDialog.Builder(context).apply {
-                setTitle("Warning")
-                setMessage(context.getString(R.string.no_post_permission))
+                setTitle(R.string.text_warning)
+                setMessage(R.string.no_post_permission)
             }.show()
         }
         else
             init(context, fragmentLayout)
+    }
+
+    private val onClick: (Long) -> Unit = {
+        val intent = Intent(context, PostActivity::class.java)
+        intent.putExtra(PostActivity.IMG_KEY, it)
+        startActivity(intent)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
@@ -74,17 +81,17 @@ class PostFragment: Fragment(), OnRefreshListener
         val requestBtn = layout.findViewById<Button>(R.id.request_permission)
         requestBtn.visibility = View.GONE
 
-        getCursor(context)?.let {
-            refreshLayout = layout.findViewById(R.id.refresh_layout)
-            refreshLayout.setOnRefreshListener(this)
+        refreshLayout = layout.findViewById(R.id.refresh_layout)
+        refreshLayout.setOnRefreshListener(this)
 
-            imageList = layout.findViewById(R.id.image_list)
+        imageList = layout.findViewById(R.id.image_list)
 
-            refreshLayout.visibility = View.VISIBLE
+        refreshLayout.visibility = View.VISIBLE
 
-            val listManager = GridLayoutManager(context, 3)
-            val listAdapter = GalleryListAdapter(it)
+        val listManager = GridLayoutManager(context, 3)
 
+        StorageMethod.getCursor(context)?.let {
+            val listAdapter = GalleryListAdapter(it, onClick)
             imageList.apply {
                 setHasFixedSize(true)
                 setItemViewCacheSize(20)
@@ -97,17 +104,10 @@ class PostFragment: Fragment(), OnRefreshListener
 
     private fun refresh(context: Context)
     {
-        getCursor(context)?.let {
-            val listAdapter = GalleryListAdapter(it)
+        StorageMethod.getCursor(context)?.let {
+            val listAdapter = GalleryListAdapter(it, onClick)
             imageList.adapter = listAdapter
         }
-    }
-
-    private fun getCursor(context: Context): Cursor?
-    {
-        val projection = arrayOf(MediaStore.Images.ImageColumns._ID, MediaStore.Images.ImageColumns.DATE_TAKEN)
-
-        return context.contentResolver.query(GalleryListAdapter.COLLECTION, projection, null, null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC")
     }
 
     private fun requestSinglePermission(context: Context, layout: View, permission: String)
@@ -119,10 +119,10 @@ class PostFragment: Fragment(), OnRefreshListener
 
         if (shouldShowRequestPermissionRationale(permission)) {
             AlertDialog.Builder(context).apply {
-                setTitle("Reason")
-                setMessage(context.getString(R.string.req_post_permission_reason))
-                setPositiveButton("Allow") { _, _ -> requestPermLauncher.launch(permission) }
-                setNegativeButton("Deny") { _, _ -> }
+                setTitle(R.string.text_reason)
+                setMessage(R.string.req_post_permission_reason)
+                setPositiveButton(R.string.text_allow) { _, _ -> requestPermLauncher.launch(permission) }
+                setNegativeButton(R.string.text_deny) { _, _ -> }
             }.show()
         }
         else

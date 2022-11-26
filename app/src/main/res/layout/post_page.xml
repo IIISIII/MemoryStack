@@ -31,12 +31,12 @@
         android:id="@+id/request_permission"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:text="Request Permission"
+        android:background="@drawable/btn_color"
+        android:text="@string/request_permission"
+        android:textColor="#ffffff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/btn_color"
-        android:textColor="#ffffff"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

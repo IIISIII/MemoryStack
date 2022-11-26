@@ -7,13 +7,21 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
+import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import edu.sns.memorystack.data.DataRepository
 import edu.sns.memorystack.databinding.ActivityPostBinding
+import edu.sns.memorystack.method.AccountMethod
+import edu.sns.memorystack.method.FollowMethod
 import edu.sns.memorystack.method.PostMethod
+import edu.sns.memorystack.network.FirebaseViewModel
+import edu.sns.memorystack.network.NotificationBody
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,9 +40,15 @@ class PostActivity : AppCompatActivity()
     private lateinit var auth: FirebaseAuth
     private var currentUser: FirebaseUser? = null
 
+    private val repo = DataRepository.getInstance()
+
+    private val firebaseViewModel: FirebaseViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         auth = Firebase.auth
         currentUser = auth.currentUser
@@ -45,6 +59,16 @@ class PostActivity : AppCompatActivity()
         }
 
         init()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
+    {
+        when(item.itemId) {
+            android.R.id.home -> {
+                finish()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun init()
@@ -74,7 +98,13 @@ class PostActivity : AppCompatActivity()
                 }
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    val result = PostMethod.post(currentUser!!.uid, id, postText)
+                    val uid = currentUser!!.uid
+                    val result = PostMethod.post(uid, id, postText)
+
+                    val profile = repo.getUserProfile(uid)
+
+                    sendPushMessage(profile!!.name, postText)
+
                     withContext(Dispatchers.Main) {
                         if(result)
                             finish()
@@ -99,5 +129,21 @@ class PostActivity : AppCompatActivity()
             } catch (err: Exception) {}
         }
         return null
+    }
+
+    suspend fun sendPushMessage(title: String, messsage: String)
+    {
+        val uid = currentUser!!.uid
+        val flist = FollowMethod.getFollowerList(uid)
+        val tokens = AccountMethod.getTokenById(flist, uid)
+
+        Log.i("testPush", flist.size.toString())
+
+        for(token in tokens) {
+            val data = NotificationBody.NotificationData(title, uid, messsage)
+            val body = NotificationBody(token, data)
+
+            firebaseViewModel.sendNotification(body)
+        }
     }
 }
