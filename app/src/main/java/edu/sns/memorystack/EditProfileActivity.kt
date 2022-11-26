@@ -1,7 +1,11 @@
 package edu.sns.memorystack
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -47,6 +51,15 @@ class EditProfileActivity : AppCompatActivity() {
             }
             //itemsCollectionRef.document(uid).update("nickname", nickname)
             finish()
+        }
+        //logout 처리
+        val logout = binding.logOut
+        logout.setOnClickListener {
+            Toast.makeText(this, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+
+            val intent = Intent(this, LoginActivity::class.java)
+            FirebaseAuth.getInstance().signOut()
+            startActivity(intent)
         }
     }
 }

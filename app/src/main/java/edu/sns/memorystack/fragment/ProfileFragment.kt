@@ -72,16 +72,6 @@ class ProfileFragment: Fragment()
             val intent = Intent(activity, EditProfileActivity::class.java)
             startActivity(intent)
         }
-        
-        //logout 처리
-        val logout = view.findViewById<Button>(R.id.logout)
-        logout.setOnClickListener {
-            Toast.makeText(activity, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
-
-            val intent = Intent(activity, LoginActivity::class.java)
-            FirebaseAuth.getInstance().signOut()
-            startActivity(intent)
-        }
 
         //getFollowerAndFollowing()
         uid?.let { getFollowingFollower(it) }
