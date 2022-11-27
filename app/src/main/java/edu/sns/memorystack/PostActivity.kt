@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -41,6 +42,9 @@ class PostActivity : AppCompatActivity()
 
     private val repo = DataRepository.getInstance()
 
+    private var sendFlag = false
+    private var sendCount = 0;
+
     private val firebaseViewModel: FirebaseViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +53,13 @@ class PostActivity : AppCompatActivity()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setTitle(R.string.label_post)
+
+        firebaseViewModel.myResponse.observe(this) {
+            if(sendFlag) {
+                if(--sendCount == 0)
+                    finish()
+            }
+        }
 
         auth = Firebase.auth
         currentUser = auth.currentUser
@@ -103,16 +114,8 @@ class PostActivity : AppCompatActivity()
 
                     val profile = repo.getUserProfile(uid, true)
 
+                    sendFlag = true
                     sendPushMessage(uid, profile!!.name, "", postText)
-
-                    withContext(Dispatchers.Main) {
-                        if(result)
-                            finish()
-                        else {
-                            binding.post.isEnabled = true
-                            binding.postText.isEnabled = true
-                        }
-                    }
                 }
             }
         } ?: finish()
@@ -135,6 +138,7 @@ class PostActivity : AppCompatActivity()
     {
         val flist = FollowMethod.getFollowerList(userId)
         val tokens = AccountMethod.getTokenById(flist, userId)
+        sendCount = tokens.size
 
         for(token in tokens) {
             val data = NotificationBody.NotificationData(userId, userName, postId, postText)
