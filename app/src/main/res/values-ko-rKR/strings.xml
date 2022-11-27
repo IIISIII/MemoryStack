@@ -36,4 +36,9 @@
     <string name="label_gallery">이미지 선택</string>
     <string name="label_profile">프로필 편집</string>
     <string name="label_follow">프로필</string>
+    <string name="content_post">새 게시물 작성됨</string>
+    <string name="label_post_data">게시물</string>
+    <string name="text_network_deny">네트워크를 연결한 후 다시 실행해주세요</string>
+    <string name="text_network_warning">인터넷 연결 안됨</string>
+    <string name="text_confirm">확인</string>
 </resources>

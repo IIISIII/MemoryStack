@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,6 +39,19 @@ class FollowListFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private var isRefreshing = false
 
+    private val requestLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        isRefreshing = true
+        CoroutineScope(Dispatchers.IO).launch {
+            val uids = AccountMethod.getAllUid(uid)
+            withContext(Dispatchers.Main) {
+                followListAdapter.clear()
+                followListAdapter.addItemList(uids)
+                refreshLayout.isRefreshing = false
+                isRefreshing = false
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         uid = Firebase.auth.currentUser?.uid ?: return
 
@@ -49,7 +63,7 @@ class FollowListFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
         userArrayList = arrayListOf()
 
-        followListAdapter = FollowListAdapter(userArrayList, uid)
+        followListAdapter = FollowListAdapter(userArrayList, uid, requestLauncher)
 
         recyclerView.adapter = followListAdapter
 

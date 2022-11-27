@@ -59,22 +59,31 @@ class OtherActivity : AppCompatActivity() {
     {
         flag = true
 
-        binding.followBtn.setOnClickListener {
-            if(!flag) {
-                flag = true
-                binding.followBtn.text = "..."
-                CoroutineScope(Dispatchers.IO).launch {
-                    if(FollowMethod.isFollowing(currentUid!!, uid))
-                        FollowMethod.unfollow(currentUid!!, uid)
-                    else
-                        FollowMethod.follow(currentUid!!, uid)
+        if(currentUid == uid)
+            binding.followBtn.setText(R.string.text_edit_profile)
 
-                    val result = FollowMethod.isFollowing(currentUid!!, uid);
-                    withContext(Dispatchers.Main) {
-                        binding.followBtn.setText(if(result) R.string.text_unfollow_btn else R.string.text_follow_btn)
-                        flag = false
+        binding.followBtn.setOnClickListener {
+            if(currentUid != other) {
+                if (!flag) {
+                    flag = true
+                    binding.followBtn.text = "..."
+                    CoroutineScope(Dispatchers.IO).launch {
+                        if (FollowMethod.isFollowing(currentUid!!, uid))
+                            FollowMethod.unfollow(currentUid!!, uid)
+                        else
+                            FollowMethod.follow(currentUid!!, uid)
+
+                        val result = FollowMethod.isFollowing(currentUid!!, uid);
+                        withContext(Dispatchers.Main) {
+                            binding.followBtn.setText(if (result) R.string.text_unfollow_btn else R.string.text_follow_btn)
+                            flag = false
+                        }
                     }
                 }
+            }
+            else {
+                val intent = Intent(this, EditProfileActivity::class.java)
+                startActivity(intent)
             }
         }
 
@@ -83,14 +92,20 @@ class OtherActivity : AppCompatActivity() {
             profile?.let { profile ->
                 val posts = PostMethod.getPostsByUid(listOf(uid))
                 val followers = FollowMethod.getFollowerList(uid)
-                val isFollowing = FollowMethod.isFollowing(currentUid!!, uid)
+
                 withContext(Dispatchers.Main) {
                     binding.nickname.text = profile.nickname
-                    binding.followBtn.setText(if(isFollowing) R.string.text_unfollow_btn else R.string.text_follow_btn)
                     binding.postCount.text = posts.size.toString()
                     binding.followerCount.text = followers.size.toString()
 
                     flag = false
+                }
+
+                if(currentUid != other) {
+                    val isFollowing = FollowMethod.isFollowing(currentUid!!, uid)
+                    withContext(Dispatchers.Main) {
+                        binding.followBtn.setText(if(isFollowing) R.string.text_unfollow_btn else R.string.text_follow_btn)
+                    }
                 }
 
                 profile.imgPath?.let {

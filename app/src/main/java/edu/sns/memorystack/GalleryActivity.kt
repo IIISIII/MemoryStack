@@ -27,7 +27,7 @@ class GalleryActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     private val requestPermLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         if (!it) {
-            AlertDialog.Builder(this).apply {
+            AlertDialog.Builder(this, R.style.AlertDialogTheme).apply {
                 setTitle(R.string.text_warning)
                 setMessage(R.string.no_post_permission)
             }.show()
@@ -122,7 +122,7 @@ class GalleryActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         }
 
         if (shouldShowRequestPermissionRationale(permission)) {
-            AlertDialog.Builder(this).apply {
+            AlertDialog.Builder(this, R.style.AlertDialogTheme).apply {
                 setTitle(R.string.text_reason)
                 setMessage(R.string.req_post_permission_reason)
                 setPositiveButton(R.string.text_allow) { _, _ -> requestPermLauncher.launch(permission) }

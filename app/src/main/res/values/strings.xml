@@ -38,4 +38,9 @@
     <string name="label_gallery">Select Image</string>
     <string name="label_profile">Edit Profile</string>
     <string name="label_follow">Profile</string>
+    <string name="content_post">New Post!</string>
+    <string name="label_post_data">Post</string>
+    <string name="text_network_deny">Please try again after connecting the network</string>
+    <string name="text_network_warning">Network Error</string>
+    <string name="text_confirm">Confirm</string>
 </resources>

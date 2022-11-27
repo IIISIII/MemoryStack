@@ -31,7 +31,7 @@ class PostFragment: Fragment(), OnRefreshListener
     private val requestPermLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         val context = requireContext()
         if (!it) {
-            AlertDialog.Builder(context).apply {
+            AlertDialog.Builder(context, R.style.AlertDialogTheme).apply {
                 setTitle(R.string.text_warning)
                 setMessage(R.string.no_post_permission)
             }.show()
@@ -121,7 +121,7 @@ class PostFragment: Fragment(), OnRefreshListener
         }
 
         if (shouldShowRequestPermissionRationale(permission)) {
-            AlertDialog.Builder(context).apply {
+            AlertDialog.Builder(context, R.style.AlertDialogTheme).apply {
                 setTitle(R.string.text_reason)
                 setMessage(R.string.req_post_permission_reason)
                 setPositiveButton(R.string.text_allow) { _, _ -> requestPermLauncher.launch(permission) }

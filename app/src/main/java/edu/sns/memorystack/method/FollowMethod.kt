@@ -1,6 +1,5 @@
 package edu.sns.memorystack.method
 
-import android.util.Log
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore

@@ -1,17 +1,10 @@
 package edu.sns.memorystack.data
 
 import android.graphics.Bitmap
-import android.util.Log
-import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import edu.sns.memorystack.method.AccountMethod
 import edu.sns.memorystack.method.PostMethod
 import edu.sns.memorystack.method.StorageMethod
-import kotlinx.coroutines.tasks.await
 
 class DataRepository private constructor()
 {
@@ -49,8 +42,10 @@ class DataRepository private constructor()
 
     private val imageHashMap: HashMap<String, Bitmap> = HashMap()
 
-    suspend fun getImage(imgPath: String): Bitmap?
+    suspend fun getImage(imgPath: String?): Bitmap?
     {
+        if(imgPath == null)
+            return null
         imageHashMap[imgPath]?.let {
             val onSuccess: (Bitmap) -> Unit = { bitmap ->
                 imageHashMap[imgPath] = bitmap

@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.MenuItem
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import edu.sns.memorystack.databinding.ActivityLoginBinding

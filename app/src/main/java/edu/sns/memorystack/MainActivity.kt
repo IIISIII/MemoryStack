@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -17,16 +18,13 @@ import com.google.firebase.messaging.FirebaseMessaging
 import edu.sns.memorystack.databinding.ActivityMainBinding
 import edu.sns.memorystack.fragment.*
 import edu.sns.memorystack.method.AccountMethod
+import edu.sns.memorystack.method.NetworkMethod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListener
 {
-    companion object {
-        const val KEY_REFRESH = "refresh"
-    }
-
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -45,30 +43,43 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
         supportActionBar?.setDisplayUseLogoEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
-        auth = Firebase.auth
-        currentUser = auth.currentUser
-        if(currentUser == null)
-            moveToLoginActivity()
+        if(NetworkMethod.checkNetworkState(this)) {
+            auth = Firebase.auth
+            currentUser = auth.currentUser
+            if(currentUser == null)
+                moveToLoginActivity()
+            else
+                init()
+        }
         else
-            init()
-    }
-
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-
+            showDialog()
     }
 
     override fun onResume()
     {
         super.onResume()
 
-        if(currentUser == null)
-            currentUser = auth.currentUser
+        if(NetworkMethod.checkNetworkState(this)) {
+            if (currentUser == null)
+                currentUser = auth.currentUser
 
-        currentUser?.let {
-            if(!init)
-                init()
+            currentUser?.let {
+                if (!init)
+                    init()
+            }
         }
+        else
+            showDialog()
+    }
+
+    private fun showDialog()
+    {
+        AlertDialog.Builder(this, R.style.AlertDialogTheme).apply {
+            setTitle(R.string.text_network_warning)
+            setMessage(R.string.text_network_deny)
+            setPositiveButton(R.string.text_confirm) { _, _ -> finish() }
+            setCancelable(false)
+        }.show()
     }
 
     private fun init()

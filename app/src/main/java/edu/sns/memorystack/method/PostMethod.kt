@@ -1,25 +1,14 @@
 package edu.sns.memorystack.method
 
-import android.content.ContentUris
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.provider.MediaStore
-import android.util.Log
 import com.google.android.gms.tasks.Task
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.model.Document
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import edu.sns.memorystack.data.PostData
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.tasks.await
-import java.util.*
 import kotlin.collections.ArrayList
 
 class PostMethod

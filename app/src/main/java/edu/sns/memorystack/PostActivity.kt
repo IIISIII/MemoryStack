@@ -7,7 +7,6 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
@@ -104,7 +103,7 @@ class PostActivity : AppCompatActivity()
 
                     val profile = repo.getUserProfile(uid, true)
 
-                    sendPushMessage(profile!!.name, postText)
+                    sendPushMessage(uid, profile!!.name, "", postText)
 
                     withContext(Dispatchers.Main) {
                         if(result)
@@ -132,16 +131,13 @@ class PostActivity : AppCompatActivity()
         return null
     }
 
-    suspend fun sendPushMessage(title: String, messsage: String)
+    private suspend fun sendPushMessage(userId: String, userName: String, postId: String, postText: String)
     {
-        val uid = currentUser!!.uid
-        val flist = FollowMethod.getFollowerList(uid)
-        val tokens = AccountMethod.getTokenById(flist, uid)
-
-        Log.i("testPush", flist.size.toString())
+        val flist = FollowMethod.getFollowerList(userId)
+        val tokens = AccountMethod.getTokenById(flist, userId)
 
         for(token in tokens) {
-            val data = NotificationBody.NotificationData(title, uid, messsage)
+            val data = NotificationBody.NotificationData(userId, userName, postId, postText)
             val body = NotificationBody(token, data)
 
             firebaseViewModel.sendNotification(body)

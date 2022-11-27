@@ -1,16 +1,17 @@
 package edu.sns.memorystack.adapter
 
-import android.graphics.Outline
-import android.util.Log
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewOutlineProvider
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import edu.sns.memorystack.PostDataActivity
 import edu.sns.memorystack.R
 import edu.sns.memorystack.data.PostData
 import edu.sns.memorystack.data.DataRepository
+import edu.sns.memorystack.data.UserProfile
 import edu.sns.memorystack.databinding.PostListItemBinding
 import edu.sns.memorystack.databinding.PostListLoadingItemBinding
 import kotlinx.coroutines.CoroutineScope
@@ -25,12 +26,14 @@ class PostListAdapter(): RecyclerView.Adapter<RecyclerView.ViewHolder>()
     private val VIEW_TYPE_ITEM = 0
     private val VIEW_TYPE_LOADING = 1
 
-    class ItemViewHolder(private val binding: PostListItemBinding): RecyclerView.ViewHolder(binding.root)
+    class ItemViewHolder(private val binding: PostListItemBinding, val context: Context): RecyclerView.ViewHolder(binding.root)
     {
         companion object {
             val dateFormat = SimpleDateFormat("yyyy.MM.dd HH:mm")
             val repo = DataRepository.getInstance()
         }
+
+        var profile: UserProfile? = null
 
         fun bind(post: PostData)
         {
@@ -40,9 +43,12 @@ class PostListAdapter(): RecyclerView.Adapter<RecyclerView.ViewHolder>()
             val postImage = binding.postImage
             val postText = binding.postText
             val postLoading = binding.imageLoading
+            val layout = binding.card
+
+            val formatDate = dateFormat.format(post.date.toDate())
 
             postText.text = post.text
-            date.text = dateFormat.format(post.date.toDate())
+            date.text = formatDate
 
             postImage.setOnClickListener {
                 postImage.scaleType = if(postImage.scaleType == ImageView.ScaleType.CENTER_CROP)
@@ -51,8 +57,17 @@ class PostListAdapter(): RecyclerView.Adapter<RecyclerView.ViewHolder>()
                     ImageView.ScaleType.CENTER_CROP
             }
 
+            layout.setOnClickListener {
+                val intent = Intent(context, PostDataActivity::class.java)
+                intent.putExtra(PostDataActivity.KEY_UID, post.uid)
+                intent.putExtra(PostDataActivity.KEY_POST_IMG, post.imgPath)
+                intent.putExtra(PostDataActivity.KEY_POST_DATE, formatDate)
+                intent.putExtra(PostDataActivity.KEY_POST_TEXT, post.text)
+                context.startActivity(intent)
+            }
+
             CoroutineScope(Dispatchers.IO).launch {
-                val profile = repo.getUserProfile(post.uid, false)
+                profile = repo.getUserProfile(post.uid, false)
                 profile?.let {
                     withContext(Dispatchers.Main) {
                         userNickname.text = it.nickname
@@ -88,7 +103,7 @@ class PostListAdapter(): RecyclerView.Adapter<RecyclerView.ViewHolder>()
         return when(viewType) {
             VIEW_TYPE_ITEM -> {
                 val binding = PostListItemBinding.inflate(inflater, parent, false)
-                ItemViewHolder(binding)
+                ItemViewHolder(binding, parent.context)
             }
             else -> {
                 val binding = PostListLoadingItemBinding.inflate(inflater, parent, false)

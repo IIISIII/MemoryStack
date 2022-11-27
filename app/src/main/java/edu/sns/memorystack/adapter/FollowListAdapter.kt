@@ -3,28 +3,23 @@ package edu.sns.memorystack.adapter
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import edu.sns.memorystack.OtherActivity
 import edu.sns.memorystack.R
 import edu.sns.memorystack.data.DataRepository
-import edu.sns.memorystack.data.PostData
 import edu.sns.memorystack.databinding.FollowListItemBinding
 import edu.sns.memorystack.databinding.PostListLoadingItemBinding
-import edu.sns.memorystack.method.AccountMethod
 import edu.sns.memorystack.method.FollowMethod
-import edu.sns.memorystack.method.StorageMethod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class FollowListAdapter(private var uids: ArrayList<String?>, private val currentUid: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
+class FollowListAdapter(private var uids: ArrayList<String?>, private val currentUid: String, private val launcher: ActivityResultLauncher<Intent>) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
     companion object
     {
@@ -37,7 +32,7 @@ class FollowListAdapter(private var uids: ArrayList<String?>, private val curren
         private var flag = false
         private val repo = DataRepository.getInstance()
 
-        fun bind(uid : String, currentUid: String)
+        fun bind(uid : String, currentUid: String, launcher: ActivityResultLauncher<Intent>)
         {
             val nickname: TextView = binding.listNickname
             val follow = binding.buttonFollow
@@ -64,10 +59,10 @@ class FollowListAdapter(private var uids: ArrayList<String?>, private val curren
                 }
             }
 
-            binding.root.setOnClickListener{
+            binding.root.setOnClickListener {
                 val intent = Intent(context, OtherActivity::class.java)
                 intent.putExtra(OtherActivity.UID, uid)
-                context.startActivity(intent)
+                launcher.launch(intent)
             }
 
             CoroutineScope(Dispatchers.IO).launch {
@@ -112,7 +107,7 @@ class FollowListAdapter(private var uids: ArrayList<String?>, private val curren
     {
         if(viewHolder is ItemViewHolder) {
             val user : String = uids[position]!!
-            viewHolder.bind(user, currentUid)
+            viewHolder.bind(user, currentUid, launcher)
         }
     }
 

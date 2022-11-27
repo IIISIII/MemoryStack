@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
-import android.widget.ImageView.ScaleType
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.ktx.auth
@@ -211,6 +210,7 @@ class EditProfileActivity : AppCompatActivity() {
                 }
 
                 withContext(Dispatchers.Main) {
+                    setResult(RESULT_OK)
                     finish()
                 }
             }

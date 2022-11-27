@@ -7,13 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import de.hdodenhof.circleimageview.CircleImageView
 import edu.sns.memorystack.EditProfileActivity
-import edu.sns.memorystack.LoginActivity
 import edu.sns.memorystack.R
 import edu.sns.memorystack.data.DataRepository
 import edu.sns.memorystack.method.FollowMethod
@@ -39,6 +40,15 @@ class ProfileFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener
     private lateinit var postCount: TextView
     private lateinit var followerCount: TextView
 
+    private val requestLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if(it.resultCode != AppCompatActivity.RESULT_OK)
+            return@registerForActivityResult
+
+        val auth = Firebase.auth
+        val currentUser = auth.currentUser ?: return@registerForActivityResult
+        init(currentUser.uid)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
@@ -58,7 +68,7 @@ class ProfileFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener
 
         edit.setOnClickListener {
             val intent = Intent(activity, EditProfileActivity::class.java)
-            startActivity(intent)
+            requestLauncher.launch(intent)
         }
 
         init(currentUser.uid)
