@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.transition.Fade
@@ -118,7 +119,7 @@ class CreateAccountActivity : AppCompatActivity()
 
                 nameFlag.let{
                     nameText.isErrorEnabled = !it
-                    nameText.error = if(!it) "Username can't be empty" else null
+                    nameText.error = if(!it) getString(R.string.error_name_blank) else null
 
                     nextBtn.isEnabled = nameFlag && nicknameFlag && it
                 }
@@ -132,21 +133,23 @@ class CreateAccountActivity : AppCompatActivity()
 
             override fun afterTextChanged(s: Editable?)
             {
+                job?.cancel()
+
                 if(viewModel.sceneFlag)
                     return
 
                 nicknameFlag = false
+                nextBtn.isEnabled = nameFlag && nicknameFlag && phoneFlag
+
                 s.toString().let {
                     viewModel.nickname = it
-
-                    job?.cancel()
 
                     if(it.isNotBlank()) {
                         job = CoroutineScope(Dispatchers.IO).launch {
                             val result = AccountMethod.isProfileDataOverlap(UserProfile.KEY_NICKNAME, it)
                             withContext(Dispatchers.Main) {
                                 nicknameText.isErrorEnabled = result
-                                nicknameText.error = if(result) "${it} is already valid" else null
+                                nicknameText.error = if(result) getString(R.string.error_nickname_conflict) else null
 
                                 nicknameFlag = !result
                                 nextBtn.isEnabled = nameFlag && nicknameFlag && phoneFlag
@@ -155,11 +158,9 @@ class CreateAccountActivity : AppCompatActivity()
                     }
                     else {
                         nicknameText.isErrorEnabled = true
-                        nicknameText.error = "Nickname can't be empty"
+                        nicknameText.error = getString(R.string.error_nickname_blank)
                     }
                 }
-
-                nextBtn.isEnabled = nameFlag && nicknameFlag && phoneFlag
             }
         })
 
@@ -170,6 +171,8 @@ class CreateAccountActivity : AppCompatActivity()
 
             override fun afterTextChanged(s: Editable?)
             {
+                job?.cancel()
+
                 if(viewModel.sceneFlag)
                     return
 
@@ -179,30 +182,36 @@ class CreateAccountActivity : AppCompatActivity()
 
                     nextBtn.isEnabled = nameFlag && nicknameFlag && phoneFlag
 
-                    val match = pattern.matcher(s.toString())
+                    if(it.isNotBlank()) {
+                        val match = pattern.matcher(s.toString())
 
-                    job?.cancel()
+                        phoneText.isErrorEnabled = !match.matches()
+                        phoneText.error = if (phoneText.isErrorEnabled) getString(R.string.error_phone_format) else null
 
-                    if(match.matches()) {
-                        job = CoroutineScope(Dispatchers.IO).launch {
-                            val result = AccountMethod.isProfileDataOverlap(UserProfile.KEY_PHONE, it)
-                            withContext(Dispatchers.Main) {
-                                phoneText.isErrorEnabled = result
-                                phoneText.error = if(result) "${it} is already valid" else null
-
-                                phoneFlag = !result
-                                nextBtn.isEnabled = nameFlag && nicknameFlag && phoneFlag
+                        if (!phoneText.isErrorEnabled) {
+                            job = CoroutineScope(Dispatchers.IO).launch {
+                                val result = AccountMethod.isProfileDataOverlap(UserProfile.KEY_PHONE, it)
+                                withContext(Dispatchers.Main) {
+                                    if (result) {
+                                        phoneText.isErrorEnabled = true
+                                        phoneText.error = getString(R.string.error_phone_conflict)
+                                    } else {
+                                        phoneText.isErrorEnabled = false
+                                        phoneText.error = null
+                                    }
+                                    phoneFlag = !result
+                                    nextBtn.isEnabled = nameFlag && nicknameFlag && phoneFlag
+                                }
                             }
                         }
                     }
                     else {
                         phoneText.isErrorEnabled = true
-                        phoneText.error = "Incorrect phone number"
+                        phoneText.error = getString(R.string.error_phone_blank)
                     }
                 }
             }
         })
-        //phoneText.editText?.addTextChangedListener(PhoneNumberFormattingTextWatcher())
 
         viewModel.username?.let {
             nameText.editText?.setText(it)
@@ -241,34 +250,44 @@ class CreateAccountActivity : AppCompatActivity()
 
             override fun afterTextChanged(s: Editable?)
             {
+                job?.cancel()
+
                 if(!viewModel.sceneFlag)
                     return
 
-                val email = s.toString()
-                val match = pattern.matcher(email)
+                s.toString().let {
+                    viewModel.email = it
 
-                viewModel.email = email
+                    emailFlag = false
+                    createBtn.isEnabled = emailFlag && passwordFlag
 
-                emailText.isErrorEnabled = !match.matches()
-                emailText.error = if(emailText.isErrorEnabled) "Incorrect email" else null
+                    if(it.isNotBlank()) {
+                        val match = pattern.matcher(it)
 
-                if(!emailText.isErrorEnabled) {
-                    job?.cancel()
+                        emailText.isErrorEnabled = !match.matches()
+                        emailText.error = if(emailText.isErrorEnabled) getString(R.string.error_email_format) else null
 
-                    job = CoroutineScope(Dispatchers.IO).launch {
-                        val result = AccountMethod.isProfileDataOverlap(UserProfile.KEY_EMAIL, email)
-                        withContext(Dispatchers.Main) {
-                            if(result) {
-                                emailText.isErrorEnabled = true
-                                emailText.error = "${email} is already valid"
+                        if(!emailText.isErrorEnabled) {
+                            job = CoroutineScope(Dispatchers.IO).launch {
+                                val result = AccountMethod.isProfileDataOverlap(UserProfile.KEY_EMAIL, it)
+                                withContext(Dispatchers.Main) {
+                                    if(result) {
+                                        emailText.isErrorEnabled = true
+                                        emailText.error = getString(R.string.error_email_conflict)
+                                    }
+                                    else {
+                                        emailText.isErrorEnabled = false
+                                        emailText.error = null
+                                    }
+                                    emailFlag = !result
+                                    createBtn.isEnabled = emailFlag && passwordFlag
+                                }
                             }
-                            else {
-                                emailText.isErrorEnabled = false
-                                emailText.error = null
-                            }
-                            emailFlag = !result
-                            createBtn.isEnabled = emailFlag && passwordFlag
                         }
+                    }
+                    else {
+                        emailText.isErrorEnabled = true
+                        emailText.error = getString(R.string.error_email_blank)
                     }
                 }
             }
@@ -279,18 +298,26 @@ class CreateAccountActivity : AppCompatActivity()
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun afterTextChanged(s: Editable?)
-            {
-                if(!viewModel.sceneFlag)
+            override fun afterTextChanged(s: Editable?) {
+                if (!viewModel.sceneFlag)
                     return
 
-                val str = s.toString()
-                viewModel.password = str
-                passwordFlag = str == passwordMatchText.editText?.text.toString()
+                s.toString().let {
+                    viewModel.password = it
+                    passwordFlag = it == passwordMatchText.editText?.text.toString() && it.isNotBlank()
+                    passwordMatchText.isErrorEnabled = !passwordFlag
 
-                passwordMatchText.isErrorEnabled = !passwordFlag
-                passwordMatchText.error = if(!passwordFlag) "Passwords do not match" else null
-
+                    if(it.isNotBlank()) {
+                        if(passwordMatchText.editText?.text.toString().isNotBlank())
+                            passwordMatchText.error = if (!passwordFlag) getString(R.string.error_password_match) else null
+                        passwordText.isErrorEnabled = false
+                        passwordText.error = null
+                    }
+                    else {
+                        passwordText.isErrorEnabled = true
+                        passwordText.error = getString(R.string.error_password_blank)
+                    }
+                }
                 createBtn.isEnabled = emailFlag && passwordFlag
             }
         })
@@ -305,13 +332,16 @@ class CreateAccountActivity : AppCompatActivity()
                 if(!viewModel.sceneFlag)
                     return
 
-                val str = s.toString()
-                viewModel.passwordMatch = str
-                passwordFlag = str == passwordText.editText?.text.toString()
+                s.toString().let {
+                    viewModel.passwordMatch = it
+                    passwordFlag = it == passwordText.editText?.text.toString() && it.isNotBlank()
+                    passwordMatchText.isErrorEnabled = !passwordFlag
 
-                passwordMatchText.isErrorEnabled = !passwordFlag
-                passwordMatchText.error = if(!passwordFlag) "Passwords do not match" else null
-
+                    if(it.isNotBlank())
+                        passwordMatchText.error = if (!passwordFlag) getString(R.string.error_password_match) else null
+                    else
+                        passwordMatchText.error = getString(R.string.error_password_blank)
+                }
                 createBtn.isEnabled = emailFlag && passwordFlag
             }
         })
@@ -326,7 +356,7 @@ class CreateAccountActivity : AppCompatActivity()
             passwordMatchText.editText?.setText(it)
         }
 
-        createBtn.isEnabled = emailFlag && passwordFlag
+        createBtn.isEnabled = false
 
         backBtn.setOnClickListener {
             goToScene1()
@@ -383,16 +413,6 @@ class CreateAccountActivity : AppCompatActivity()
     private fun goToScene2()
     {
         TransitionManager.go(scene2, Fade())
-    }
-
-    private fun uiSetEnable(enable: Boolean)
-    {
-//        binding.name.isEnabled = enable
-//        binding.nickname.isEnabled = enable
-//        binding.email.isEnabled = enable
-//        binding.password.isEnabled = enable
-//        binding.phone.isEnabled = enable
-//        binding.createAccount.isEnabled = enable
     }
 
     class SceneViewModel: ViewModel()

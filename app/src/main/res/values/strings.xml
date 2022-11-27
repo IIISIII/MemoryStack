@@ -43,4 +43,16 @@
     <string name="text_network_deny">Please try again after connecting the network</string>
     <string name="text_network_warning">Network Error</string>
     <string name="text_confirm">Confirm</string>
+    <string name="error_email_format">Incorrect Email format</string>
+    <string name="error_email_conflict">This email is already exists</string>
+    <string name="error_email_blank">Please enter email</string>
+    <string name="error_name_blank">Please enter name</string>
+    <string name="error_nickname_conflict">This Nickname is already exists</string>
+    <string name="error_nickname_blank">Please enter nickname</string>
+    <string name="error_phone_format">Incorrect Phone number format</string>
+    <string name="error_phone_conflict">This phone number is already exists</string>
+    <string name="error_phone_blank">Please enter phone number</string>
+    <string name="error_password_match">Passwords don\'t match</string>
+    <string name="error_password_blank">Please enter password</string>
+    <string name="error_login_fail">Please check email and password</string>
 </resources>

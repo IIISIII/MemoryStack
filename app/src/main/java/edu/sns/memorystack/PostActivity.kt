@@ -140,6 +140,13 @@ class PostActivity : AppCompatActivity()
         val tokens = AccountMethod.getTokenById(flist, userId)
         sendCount = tokens.size
 
+        if(sendCount == 0) {
+            withContext(Dispatchers.Main) {
+                finish()
+            }
+            return
+        }
+
         for(token in tokens) {
             val data = NotificationBody.NotificationData(userId, userName, postId, postText)
             val body = NotificationBody(token, data)

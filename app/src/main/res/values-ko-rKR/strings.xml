@@ -41,4 +41,16 @@
     <string name="text_network_deny">네트워크를 연결한 후 다시 실행해주세요</string>
     <string name="text_network_warning">인터넷 연결 안됨</string>
     <string name="text_confirm">확인</string>
+    <string name="error_email_conflict">이 이메일은 이미 가입 되어있습니다</string>
+    <string name="error_email_format">잘못된 형식의 이메일 입니다</string>
+    <string name="error_email_blank">이메일을 입력해주세요</string>
+    <string name="error_name_blank">이름을 입력해주세요</string>
+    <string name="error_nickname_conflict">중복된 닉네임 입니다</string>
+    <string name="error_nickname_blank">닉네임을 입력해주세요</string>
+    <string name="error_phone_format">잘못된 형식의 전화번호 입니다</string>
+    <string name="error_phone_conflict">이 전화번호는 이미 가입 되어있습니다</string>
+    <string name="error_phone_blank">전화번호를 입력해주세요</string>
+    <string name="error_password_match">비밀번호가 일치하지 않습니다</string>
+    <string name="error_password_blank">비밀번호를 입력해주세요</string>
+    <string name="error_login_fail">이메일과 비밀번호를 확인해주세요</string>
 </resources>

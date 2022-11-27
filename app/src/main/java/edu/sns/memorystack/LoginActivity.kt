@@ -47,7 +47,7 @@ class LoginActivity : AppCompatActivity()
                 binding.emailText.apply {
                     isErrorEnabled = !match.matches()
                     emailFlag = !isErrorEnabled
-                    error = if(isErrorEnabled) "Incorrect email" else null
+                    error = if(isErrorEnabled) getString(R.string.error_email_format) else null
                 }
 
                 binding.loginButton.isEnabled = emailFlag && passwordFlag
@@ -105,7 +105,7 @@ class LoginActivity : AppCompatActivity()
             } catch(err: Exception) {}
             if(!result) {
                 withContext(Dispatchers.Main) {
-                    errorLog("Please check E-mail and Password")
+                    errorLog(getString(R.string.error_login_fail))
                     uiSetEnable(true)
                 }
             }
